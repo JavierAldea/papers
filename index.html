@@ -3,377 +3,1159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Papers</title>
+<title>TechVigilance</title>
 <style>
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --accent: #6366f1;
-    --accent2: #818cf8;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --border: #2d3148;
-    --radius: 12px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --ms-blue:    #0078d4;
+    --ms-blue-dk: #005a9e;
+    --ms-blue-lt: #c7e0f4;
+    --ms-bg:      #f3f2f1;
+    --ms-white:   #ffffff;
+    --ms-gray1:   #faf9f8;
+    --ms-gray2:   #edebe9;
+    --ms-gray3:   #d2d0ce;
+    --ms-gray4:   #a19f9d;
+    --ms-gray5:   #605e5c;
+    --ms-text:    #323130;
+    --ms-muted:   #605e5c;
+    --ms-green:   #107c10;
+    --ms-orange:  #d83b01;
+    --radius:     4px;
+    --shadow:     0 1.6px 3.6px rgba(0,0,0,.13), 0 0.3px 0.9px rgba(0,0,0,.11);
+    --shadow-hov: 0 6px 20px rgba(0,0,0,.15);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--ms-bg);
+    color: var(--ms-text);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    font-size: 14px;
     min-height: 100vh;
   }
 
-  header {
-    background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 48px 24px 32px;
-    text-align: center;
-  }
-
-  header h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #a5b4fc, #818cf8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 8px;
-  }
-
-  header p {
-    color: var(--muted);
-    font-size: 0.95rem;
-  }
-
-  #counter {
-    display: inline-block;
-    background: var(--accent);
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 2px 10px;
-    border-radius: 99px;
-    margin-left: 8px;
-    vertical-align: middle;
-  }
-
-  .controls {
-    max-width: 900px;
-    margin: 28px auto 0;
-    padding: 0 24px;
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--ms-blue);
+    height: 48px;
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
     align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    color: white;
+  }
+  .topbar-icon { opacity: .9; }
+  .topbar h1 { font-size: 15px; font-weight: 600; letter-spacing: .01em; }
+  .topbar-count {
+    margin-left: auto;
+    background: rgba(255,255,255,.2);
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
   }
 
-  .search-wrap {
-    flex: 1;
-    min-width: 200px;
-    position: relative;
-  }
-
-  .search-wrap svg {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-    pointer-events: none;
-  }
-
-  input[type=search] {
-    width: 100%;
-    padding: 12px 16px 12px 42px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  input[type=search]:focus {
-    border-color: var(--accent);
-  }
-
-  input[type=search]::placeholder {
-    color: var(--muted);
-  }
-
-  .sort-select {
-    padding: 12px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-size: 0.9rem;
-    cursor: pointer;
-    outline: none;
-  }
-
-  main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 24px;
-    display: grid;
-    gap: 16px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px 24px;
-    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-    cursor: default;
-  }
-
-  .card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
+  /* ── COMMAND BAR ── */
+  .commandbar {
+    background: var(--ms-white);
+    border-bottom: 1px solid var(--ms-gray3);
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
     box-shadow: var(--shadow);
   }
 
-  .card-top {
+  .search-box {
     display: flex;
-    align-items: flex-start;
-    gap: 16px;
+    align-items: center;
+    border: 1px solid var(--ms-gray3);
+    border-radius: var(--radius);
+    background: var(--ms-white);
+    padding: 0 10px;
+    gap: 6px;
+    height: 32px;
+    flex: 1;
+    min-width: 200px;
+    max-width: 360px;
+    transition: border-color .15s;
+  }
+  .search-box:focus-within { border-color: var(--ms-blue); box-shadow: 0 0 0 1px var(--ms-blue); }
+  .search-box input {
+    border: none; outline: none; background: transparent;
+    font: inherit; color: var(--ms-text); width: 100%; font-size: 13px;
+  }
+  .search-box svg { color: var(--ms-gray4); flex-shrink: 0; }
+
+  .ms-btn {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--ms-gray3);
+    background: var(--ms-white);
+    color: var(--ms-text);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: background .1s, border-color .1s;
+  }
+  .ms-btn:hover { background: var(--ms-gray2); }
+  .ms-btn.active { background: var(--ms-blue-lt); border-color: var(--ms-blue); color: var(--ms-blue-dk); font-weight: 600; }
+
+  select.ms-select {
+    height: 32px;
+    padding: 0 28px 0 10px;
+    border: 1px solid var(--ms-gray3);
+    border-radius: var(--radius);
+    background: var(--ms-white);
+    color: var(--ms-text);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23605e5c' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+  select.ms-select:focus { border-color: var(--ms-blue); box-shadow: 0 0 0 1px var(--ms-blue); }
+
+  .sep { width: 1px; height: 24px; background: var(--ms-gray3); margin: 0 4px; }
+
+  /* ── FILTERS PILLS ── */
+  .filter-bar {
+    background: var(--ms-gray1);
+    border-bottom: 1px solid var(--ms-gray3);
+    padding: 6px 20px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-label { font-size: 12px; color: var(--ms-muted); margin-right: 4px; }
+
+  .pill {
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 13px;
+    border: 1px solid var(--ms-gray3);
+    background: var(--ms-white);
+    color: var(--ms-muted);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+  .pill:hover { border-color: var(--ms-blue); color: var(--ms-blue); }
+  .pill.active {
+    background: var(--ms-blue);
+    border-color: var(--ms-blue);
+    color: white;
+    font-weight: 600;
   }
 
-  .card-num {
-    min-width: 32px;
-    height: 32px;
-    background: var(--surface2);
-    border-radius: 8px;
+  /* ── MAIN GRID ── */
+  main {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 20px 40px;
+    display: grid;
+    gap: 8px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--ms-white);
+    border: 1px solid var(--ms-gray3);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    transition: box-shadow .15s, border-color .15s;
+    position: relative;
+  }
+  .card:hover {
+    border-color: var(--ms-blue);
+    box-shadow: var(--shadow-hov);
+  }
+
+  .card-row1 {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .rank-badge {
+    min-width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
+    background: var(--ms-blue);
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 12px;
     font-weight: 700;
-    color: var(--accent2);
-    margin-top: 2px;
+    flex-shrink: 0;
   }
 
-  .card-body { flex: 1; }
+  .card-main { flex: 1; min-width: 0; }
 
   .card-title {
-    font-size: 1.05rem;
+    font-size: 14px;
     font-weight: 600;
-    color: var(--text);
+    color: var(--ms-blue-dk);
     line-height: 1.4;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+  }
+  .card-title:hover { text-decoration: underline; color: var(--ms-blue); }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--ms-muted);
+    margin-bottom: 8px;
+    align-items: center;
   }
 
-  .card-authors {
-    font-size: 0.82rem;
-    color: var(--accent2);
-    margin-bottom: 10px;
-    font-style: italic;
+  .meta-item { display: flex; align-items: center; gap: 4px; }
+
+  .access-badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+  .access-badge.open { background: #dff6dd; color: var(--ms-green); }
+  .access-badge.paywall { background: #fff4ce; color: #7d5a00; }
+
+  .domain-tag {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    background: var(--ms-blue-lt);
+    color: var(--ms-blue-dk);
+    font-weight: 500;
   }
 
   .card-abstract {
-    font-size: 0.88rem;
-    color: var(--muted);
-    line-height: 1.6;
+    font-size: 13px;
+    color: var(--ms-muted);
+    line-height: 1.55;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    transition: all 0.3s;
   }
+  .card-abstract.expanded { -webkit-line-clamp: unset; }
 
-  .card-abstract.expanded {
-    -webkit-line-clamp: unset;
-  }
-
-  .card-footer {
+  .card-row2 {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-top: 14px;
+    align-items: center;
+    margin-top: 10px;
     flex-wrap: wrap;
     gap: 8px;
   }
 
-  .btn-expand {
+  .card-actions { display: flex; gap: 6px; align-items: center; }
+
+  .btn-toggle {
     background: none;
     border: none;
-    color: var(--muted);
-    font-size: 0.8rem;
+    color: var(--ms-blue);
+    font: inherit;
+    font-size: 12px;
     cursor: pointer;
     padding: 0;
-    transition: color 0.2s;
-  }
-
-  .btn-expand:hover { color: var(--accent2); }
-
-  .btn-link {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    background: var(--accent);
+    gap: 4px;
+  }
+  .btn-toggle:hover { text-decoration: underline; }
+
+  .btn-open {
+    height: 28px;
+    padding: 0 12px;
+    background: var(--ms-blue);
     color: white;
     text-decoration: none;
-    border-radius: 8px;
-    font-size: 0.82rem;
+    border-radius: var(--radius);
+    font: inherit;
+    font-size: 12px;
     font-weight: 600;
-    transition: background 0.2s, transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background .15s;
+  }
+  .btn-open:hover { background: var(--ms-blue-dk); }
+
+  .owner-chip {
+    font-size: 11px;
+    color: var(--ms-gray4);
+    background: var(--ms-gray1);
+    border: 1px solid var(--ms-gray2);
+    border-radius: 3px;
+    padding: 1px 7px;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .btn-link:hover {
-    background: var(--accent2);
-    transform: translateY(-1px);
+  .why-box {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--ms-gray1);
+    border-left: 3px solid var(--ms-blue);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 12px;
+    color: var(--ms-muted);
+    line-height: 1.5;
+    display: none;
   }
+  .why-box.visible { display: block; }
 
   .no-results {
     text-align: center;
-    color: var(--muted);
-    padding: 64px 0;
-    font-size: 1rem;
+    color: var(--ms-muted);
+    padding: 60px 0;
+    font-size: 14px;
   }
 
-  .highlight { background: rgba(99,102,241,0.3); border-radius: 3px; padding: 0 2px; }
+  mark { background: #fff3cd; border-radius: 2px; padding: 0 1px; }
 
-  @media (max-width: 600px) {
-    header h1 { font-size: 1.6rem; }
-    .card { padding: 16px; }
+  @media(max-width:600px) {
+    .topbar h1 { font-size: 13px; }
+    .card { padding: 12px; }
+    .rank-badge { min-width: 30px; height: 30px; font-size: 11px; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Papers <span id="counter"></span></h1>
-  <p>Lista de papers académicos</p>
-</header>
+<div class="topbar">
+  <svg class="topbar-icon" width="20" height="20" viewBox="0 0 20 20" fill="white">
+    <path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h10v2H2z"/>
+  </svg>
+  <h1>TechVigilance</h1>
+  <span class="topbar-count" id="topbar-count"></span>
+</div>
 
-<div class="controls">
-  <div class="search-wrap">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<div class="commandbar">
+  <div class="search-box">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
     </svg>
-    <input type="search" id="searchInput" placeholder="Buscar por título, autores o abstract…" autofocus>
+    <input type="search" id="searchInput" placeholder="Buscar en todos los campos…">
   </div>
-  <select class="sort-select" id="sortSelect">
-    <option value="default">Orden original</option>
-    <option value="title">A–Z por título</option>
+
+  <div class="sep"></div>
+
+  <select class="ms-select" id="sortSelect">
+    <option value="rank">Ordenar: Relevancia</option>
+    <option value="year">Ordenar: Año</option>
+    <option value="title">Ordenar: A–Z</option>
   </select>
+
+  <select class="ms-select" id="accessSelect">
+    <option value="">Acceso: Todos</option>
+    <option value="OPEN">Solo Open Access</option>
+    <option value="PAYWALL">Solo Paywall</option>
+  </select>
+</div>
+
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">Dominio:</span>
+  <button class="pill active" data-domain="">Todos</button>
 </div>
 
 <main id="grid"></main>
 
 <script>
-const PAPERS = [
+const PAPERS  = [
   {
-    "title": "Attention Is All You Need",
-    "authors": "Vaswani, A.; Shazeer, N.; Parmar, N.",
-    "abstract": "Proponemos un nuevo modelo de red neuronal basado únicamente en mecanismos de atención, prescindiendo completamente de recurrencia y convoluciones. Los experimentos muestran resultados superiores en tareas de traducción.",
-    "link": "https://arxiv.org/abs/1706.03762"
+    "title": "Precision Biomanufacturing with Lactic Acid Bacteria: From Ancestral Fermentations to Technological Innovation and Future Prospects for Next-Generation Functional Foods",
+    "authors": "Multiple authors – MDPI Fermentation 12(1), 33",
+    "abstract": "Reviews the shift from conventional LAB fermentation to precision biomanufacturing using CRISPR-Cas editing, multi-omics and AI/ML for rational strain design, reporting metabolic flux engineering for nutraceuticals such as NMN and N-acetylglucosamine.",
+    "why": "Provides a roadmap for integrating synthetic-biology and AI tools into LAB strain development, directly transferable to brewing biotech (e.g., sour beer, bioprotection, functional metabolite production).",
+    "link": "https://doi.org/10.3390/fermentation12010033",
+    "doi": "10.3390/fermentation12010033",
+    "year": "2.026",
+    "rank": "42",
+    "domains": [],
+    "access": "OPEN",
+    "owner": "",
+    "date": "16/03/2026 21:00"
   },
   {
-    "title": "BERT: Pre-training of Deep Bidirectional Transformers",
-    "authors": "Devlin, J.; Chang, M.; Lee, K.; Toutanova, K.",
-    "abstract": "Introducimos BERT, diseñado para pre-entrenar representaciones profundas bidireccionales condicionando conjuntamente el contexto izquierdo y derecho en todas las capas.",
-    "link": "https://arxiv.org/abs/1810.04805"
+    "title": "Structural deviations between native and precision fermentation-derived food proteins: Techno-functionality and structure formation strategies",
+    "authors": "J. K. Keppler| M. W. T. Werten| R. M. Boom",
+    "abstract": "Reviews structural differences (N-terminal extensions, glycosylation variants, impurities) between recombinant and animal-derived dairy, egg and gelatin proteins from precision fermentation, and proposes top-down/bottom-up strategies to achieve equivalent food functionality.",
+    "why": "Maps techno-functional gaps that must be closed before PF-derived proteins can serve as drop-in replacements in food/beverage matrices, including emulsification and gelation relevant to brewing adjuncts.",
+    "link": "https://doi.org/10.1016/j.tifs.2025.105493",
+    "doi": "10.1016/j.tifs.2025.105493",
+    "year": "2.026",
+    "rank": "41",
+    "domains": [],
+    "access": "OPEN",
+    "owner": "",
+    "date": "16/03/2026 21:00"
   },
   {
-    "title": "Language Models are Few-Shot Learners",
-    "authors": "Brown, T.; Mann, B.; Ryder, N.",
-    "abstract": "Demostramos que los modelos de lenguaje de gran escala son aprendices de pocos ejemplos, logrando resultados competitivos en tareas de NLP sin fine-tuning.",
-    "link": "https://arxiv.org/abs/2005.14165"
+    "title": "Postbiotics in Functional Foods: Microbial Derivatives Shaping Health, Immunity and Next-Generation Nutrition",
+    "authors": "Mafe et al.",
+    "abstract": "Systematically reviews postbiotic sources, mechanisms (immune modulation, metabolic regulation, gut–brain signalling), health benefits, formulation strategies and EFSA/FDA regulatory landscape, arguing postbiotics address key probiotic limitations of viability and shelf stability.",
+    "why": "Positions postbiotics as shelf-stable functional ingredients for beverages, overcoming live-culture viability challenges in pasteurised or processed drinks—directly relevant to NOLO functional beverage development.",
+    "link": "https://doi.org/10.1002/fft2.70205",
+    "doi": "10.1002/fft2.70205",
+    "year": "2.026",
+    "rank": "40",
+    "domains": [],
+    "access": "OPEN",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Production of Gluten-Free Craft Beers of High Antioxidant and Sensory Quality",
+    "authors": "Antonietta Baiano; Teresa De Pilli; Anna Fiore",
+    "abstract": "Discusses technical routes for producing gluten-free craft beer while maintaining sensory quality, and reports a formulation/processing approach that preserves antioxidant properties alongside acceptable flavor.",
+    "why": "Supports gluten-reduction strategy design (enzymes/process) without compromising flavor/claim substantiation.",
+    "link": "https://www.mdpi.com/2304-8158/15/2/379",
+    "doi": "10.3390/foods15020379",
+    "year": "2.026",
+    "rank": "39",
+    "domains": [
+      "Biotech applied"
+    ],
+    "access": "OPEN",
+    "owner": "MANUEL AGUINAGA CABREDO;LUIS MIGUEL BARRERA ARBELAEZ",
+    "date": "10/03/2026 14:00"
+  },
+  {
+    "title": "Screening of Lactic Acid Bacteria and RSM-Based Optimization for Enhancing γ-Aminobutyric Acid (GABA) Accumulation in Orange Juice",
+    "authors": "Shufeng Yin| Yiyao Wang| RuiXue Zhao| Ning Zhao| Hao Liu| Yining Tang| Ningbo Qin| Yiwei Dai| Xinping Lin",
+    "abstract": "Screens 52 LAB strains and applies response-surface methodology to optimise GABA accumulation in fermented orange juice, achieving 0.89 g/L (+39 % vs. control) using a Lcb. paracasei / Lcb. rhamnosus co-culture.",
+    "why": "Transferable optimisation framework for GABA enrichment in beverage matrices; LAB strain-selection logic and RSM protocol can be adapted for beer/malt-based functional beverages.",
+    "link": "https://doi.org/10.3390/foods15010071",
+    "doi": "10.3390/foods15010071",
+    "year": "2.026",
+    "rank": "38",
+    "domains": [],
+    "access": "OPEN",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Environmental and economic impacts of using brewers spent grains for animal feed and anaerobic digestion",
+    "authors": "Nicholas Davison; Christos Christodoulou; David Humphries; Kirsty Kliem; Sokratis Stergiadis| Laurence Smith",
+    "abstract": "Quantifies environmental and economic trade-offs of directing brewers' spent grains to animal feed versus anaerobic digestion, using life-cycle and cost analyses to inform valorization pathway selection.",
+    "why": "Provides decision-support data for breweries choosing between feed and biogas valorization routes, directly mapping cost, GHG and nutrient-recovery trade-offs.",
+    "link": "https://doi.org/10.1016/j.jclepro.2025.14736",
+    "doi": "10.1016/j.jclepro.2025.14736",
+    "year": "2.026",
+    "rank": "37",
+    "domains": [],
+    "access": "OPEN",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Natural deep eutectic solvents for polyphenol extraction from brewer's spent grain: comparative evaluation with conventional solvents",
+    "authors": "Luca Masiello| Giuseppina Adiletta| Matteo Di Renzo| Anna Maria Tarola; Paola Russo",
+    "abstract": "Compares natural deep eutectic solvents (NADES) against conventional organic solvents for extracting polyphenols from brewer's spent grain, evaluating yield, antioxidant activity and environmental footprint.",
+    "why": "Provides a direct green-solvent benchmark for BSG polyphenol extraction, relevant to scaling NADES-based processes for brewery circular-economy schemes.",
+    "link": "https://doi.org/10.1007/s00217-026-05066-z",
+    "doi": "10.1007/s00217-026-05066-z",
+    "year": "2.026",
+    "rank": "36",
+    "domains": [],
+    "access": "OPEN",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Energy-efficient production of plasma-activated water insights into controllable peroxynitrite chemistry",
+    "authors": "D. Gan|L. Hong|S. Yuan|M. Zhu|Y. Gao|T. Zhang|T. Li|B. Chen|A. Dzimitrowicz|P. Jamroz|P. J. Cullen|R. Zhou",
+    "abstract": "Producción de plasma activated water con control químico del peroxinitrito y eficiencia energética.",
+    "why": "Relevante para evaluar viabilidad operativa y coste energético de PAW.",
+    "link": "https://doi.org/10.1039/D5GC00080G",
+    "doi": "10.1039/d5gc00080g",
+    "year": "2.025",
+    "rank": "35",
+    "domains": [],
+    "access": "PAYWALL",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Aging of Citra®, Cascade, and Centennial hops under commercial storage and the discrepancies between sensory quality and HSI classification",
+    "authors": "Jobe C. A.|Rubottom L. N.| Shellhammer T. H.",
+    "abstract": "Investigates hop aging of Citra®, Cascade and Centennial under commercial storage conditions and reveals that the Hop Storage Index does not consistently align with trained-panel sensory quality assessments.",
+    "why": "Challenges the reliance on HSI as sole quality metric for hop storage, providing evidence for integrating sensory panels into QA decisions on raw material shelf life.",
+    "link": "https://doi.org/10.1016/j.foodchem.2026.147870",
+    "doi": "10.1016/j.foodchem.2026.147870",
+    "year": "2.026",
+    "rank": "34",
+    "domains": [],
+    "access": "PAYWALL",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Plasma Activated Water in Enhancing Food Safety and Quality A Comprehensive Review",
+    "authors": "Shivangi Srivastava|Ubaida Akbar|Md Sabir Ahmed Mondol|Kshirod Kumar Dash|Pir Mohammad Junaid|Madiya Manzoor|Shafat Ahmad Khan|Aamir Hussain Dar",
+    "abstract": "Revisión sobre PAW como desinfectante no térmico en procesado alimentario.",
+    "why": "Complementa evidencia técnica para justificar pruebas piloto.",
+    "link": "https://doi.org/10.1007/s11090-025-10601-z",
+    "doi": "10.1007/s11090-025-10601-z",
+    "year": "2.025",
+    "rank": "33",
+    "domains": [],
+    "access": "PAYWALL",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Recent trends in non-thermal plasma and plasma activated water Effect on quality attributes mechanism of interaction and potential application in food and agriculture",
+    "authors": "Sunil Pipliya|Sitesh Kumar|Nikhil Babar|Prem Prakash Srivastav",
+    "abstract": "Revisión open access sobre NTP y PAW incluyendo mecanismos y efectos en calidad.",
+    "why": "Marco comparativo útil para análisis riesgo beneficio.",
+    "link": "https://doi.org/10.1016/j.focha.2023.100249",
+    "doi": "10.1016/j.focha.2023.100249",
+    "year": "2.023",
+    "rank": "32",
+    "domains": [],
+    "access": "OPEN",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "A comprehensive review on cold plasma applications in the food industry",
+    "authors": "Raju Sasikumar|Selva Kumar T.|Irengbam Barun Mangang|G. Kaviarasu|Ravinder Kaushik|Paul Mansingh|Vidisha Tomer|Amit K. Jaiswal",
+    "abstract": "Review de aplicaciones de cold plasma en industria alimentaria enfocado en inactivación microbiana y calidad.",
+    "why": "Base sólida para evaluar NTP y plasma en sanitización industrial.",
+    "link": "https://doi.org/10.1039/D5FB00148J",
+    "doi": "10.1039/d5fb00148j",
+    "year": "2.025",
+    "rank": "31",
+    "domains": [],
+    "access": "OPEN",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Interactions Between Fermentation Temperature and Yeast Strain: Impacts on Polyfunctional Thiol Release and Beer Aroma",
+    "authors": "Rania S. Samia| Cédric Chenot| Aaron Shayevitz| Timo Fischborn| Thomas H. Shellhammer",
+    "abstract": "Examines how fermentation temperature (15–30 °C) and five commercial yeast strains interact to modulate polyfunctional thiol (3SH, 4MSP, 3S4MP) release in pilot-scale Cascade-hopped beers, reporting temperature-dependent 3SH increases of 33–72 %.",
+    "why": "Directly actionable for brewers tuning fermentation temperature and yeast selection to maximise tropical thiol expression in hop-forward beers.",
+    "link": "https://doi.org/10.1080/03610470.2025.2593042",
+    "doi": "10.1080/03610470.2025.2593042",
+    "year": "2.026",
+    "rank": "30",
+    "domains": [
+      "Brewing & Process"
+    ],
+    "access": "OPEN",
+    "owner": "MANUEL AGUINAGA CABREDO;JORDI ROYES BUISAN",
+    "date": ""
+  },
+  {
+    "title": "Assessing the effectiveness of a novel bacteriophage in preventing biofilm formation by the beer-spoilage bacterium Pediococcus damnosus on stainless steel surface",
+    "authors": "M. A. Abouelkheir| M. A. Abdallah| E. M. Ismail| M. A. El-Sayed| et al.",
+    "abstract": "Evaluates a bacteriophage intervention to prevent Pediococcus damnosus biofilm formation on stainless steel, assessing efficacy under relevant conditions for brewery hygiene control.",
+    "why": "Alternative biofilm-control lever (phages) for brewery-relevant spoilers; useful for non-chemical mitigation concepts and for understanding practical constraints on deployment.",
+    "link": "https://doi.org/10.1016/j.ijfoodmicro.2025.111064",
+    "doi": "10.1016/j.ijfoodmicro.2025.111064",
+    "year": "2.025",
+    "rank": "29",
+    "domains": [],
+    "access": "PAYWALL",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Intelligent industrial cleaning: a multi-sensor approach utilising machine learning-based regression",
+    "authors": "A. Simeone| E. Woolley| J. Escrig| et al.",
+    "abstract": "Presents a multi-sensor industrial cleaning setup and applies machine-learning regression to estimate cleaning state/performance, enabling smarter end-point detection and resource-efficient operation.",
+    "why": "Relevant for digitising CIP: shifts validation from fixed recipes to state-based control, potentially reducing over-cleaning (water/chemicals/time) while managing hygiene risk.",
+    "link": "https://doi.org/10.1016/j.foodcont.2024.110877",
+    "doi": "10.1016/j.foodcont.2024.110877",
+    "year": "2.024",
+    "rank": "28",
+    "domains": [],
+    "access": "PAYWALL",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Is cleaning in place (CIP) ready for the future? - A critical assessment",
+    "authors": "Arjan J. Van Asselt| Holly A. Huellemeier| Harald J Schuten| Wolfgang Augustin",
+    "abstract": "Reviews CIP unit operations and cleaning chemistries, then synthesises environmental impact drivers (water, energy, chemicals, wastewater) and mitigation options including alternative disinfectants and process monitoring.",
+    "why": "Good baseline to structure a 'CIP alternatives' roadmap with a defensible LCA/footprint framing and a map of levers beyond chemistry alone.",
+    "link": "https://doi.org/10.1016/j.fbp.2025.09.022",
+    "doi": "10.1016/j.fbp.2025.09.022",
+    "year": "2.025",
+    "rank": "27",
+    "domains": [],
+    "access": "PAYWALL",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Enhancing clean-in-place system sustainability with recurrent neural network and multi-objective optimization techniques",
+    "authors": "R. Sislian| P. R. P. Allegro| R. Gedraite| G. O. Meloni| P. R. S. Oliveira| F. V. Silva| D. L. Toufen",
+    "abstract": "Uses lab-scale CIP data to train an LSTM model and applies NSGA-II multi-objective optimisation to reduce rinse-water consumption under pulsed/variable flow setpoints; reports substantial water and time reductions vs constant-flow baselines.",
+    "why": "Practical pathway to reduce CIP water footprint using soft sensors + optimisation, with quantified trade-offs (RMSE vs litres/time) and a validation approach.",
+    "link": "https://doi.org/10.1007/s13762-025-06801-x",
+    "doi": "10.1007/s13762-025-06801-x",
+    "year": "2.026",
+    "rank": "26",
+    "domains": [
+      "Brewing & Process"
+    ],
+    "access": "PAYWALL",
+    "owner": "",
+    "date": "16/03/2026 21:00"
+  },
+  {
+    "title": "Plasma-activated water in agriculture, food safety, and healthcare",
+    "authors": "Nguyen Van Duc Long|Sourjo Sengupta| Changping Zhuang| Katharina Richter| Volker Hessel",
+    "abstract": "Reviews plasma-activated water (PAW): generation methods, reactive species chemistry, stability and application evidence across agriculture, food safety/disinfection and healthcare.",
+    "why": "Evidence base for PAW as a chemical-lean antimicrobial and cleaning adjunct; useful to benchmark PAW vs electrolyzed water and to identify the real constraints (species stability, dose, material compatibility).",
+    "link": "https://doi.org/10.1016/j.cej.2025.172535",
+    "doi": "10.1016/j.cej.2025.172535",
+    "year": "2.026",
+    "rank": "25",
+    "domains": [
+      "Brewing & Process"
+    ],
+    "access": "OPEN",
+    "owner": "",
+    "date": "16/03/2026 10:00"
+  },
+  {
+    "title": "Fungal foam: Effect of different substrates on the growth performance, process efficiency, and material properties",
+    "authors": "Nur Mawaddah Majib| Noorulnajwa Diyana Yaacob| Sam Sung Ting| Nor Munirah Rohaizad",
+    "abstract": "Compares fungal-foam/mycelium-material production on different substrates, quantifying effects on growth performance, process efficiency and resulting material properties relevant to scale-up and application fit.",
+    "why": "Directly relevant for exploring mycelium-based materials from agro-industrial side streams (including bagasse) and for setting screening KPIs (growth rate, yield, mechanical properties).",
+    "link": "https://doi.org/10.1016/j.scenv.2026.100314",
+    "doi": "10.1016/j.scenv.2026.100314",
+    "year": "2.026",
+    "rank": "24",
+    "domains": [
+      "Byproducts & Circularity",
+      "Materials & Packaging"
+    ],
+    "access": "OPEN",
+    "owner": "PABLO TEJERO TRAPIELLA",
+    "date": "16/03/2026 1:00"
+  },
+  {
+    "title": "EMS-induced mutagenesis of Aspergillus terreus for enhanced xylanase production and subsequent biotransformation of sugarcane bagasse-derived xylose towards xylitol",
+    "authors": "Satwika Das; Ramandeep Kaur; Naveen Kumar Bhukya; Kanimozhi Jeyaram; Ashish A. Prabhu",
+    "abstract": "Applies EMS mutagenesis to improve xylanase production in Aspergillus terreus, then uses the enzyme to saccharify bagasse and biotransforms the resulting xylose to xylitol with Yarrowia lipolytica, reporting titre and yield figures.",
+    "why": "End-to-end blueprint from bagasse to a value-added polyol (xylitol), including strain improvement, hydrolysis and biotransformation steps.",
+    "link": "https://doi.org/10.1007/s00203-025-04702-8",
+    "doi": "10.1007/s00203-025-04702-8",
+    "year": "2.026",
+    "rank": "23",
+    "domains": [
+      "Byproducts & Circularity",
+      "Biotech applied"
+    ],
+    "access": "",
+    "owner": "RUBEN VERA DOMINGO;EDUARDO BARBOSA GORDO;JORDI ROYES BUISAN",
+    "date": "11/03/2026 12:00"
+  },
+  {
+    "title": "Valorization of Sugarcane Bagasse Via Pre-Pyrolysis Fermentation with Pleurotus ostreatus: Thermal Kinetics and Product Quality Enhancement",
+    "authors": "Budianto Budianto; Rinny Ermiyanti Yasin",
+    "abstract": "Uses Pleurotus ostreatus fermentation as a biological pretreatment before pyrolysis of sugarcane bagasse; reports reduced activation energy, earlier thermal decomposition, and changes in product yields and biochar quality.",
+    "why": "Uses Pleurotus ostreatus fermentation as a biological pretreatment before pyrolysis of sugarcane bagasse; reports reduced activation energy, earlier thermal decomposition, and changes in product yields and biochar quality.",
+    "link": "https://doi.org/10.1007/s42250-025-01519-2",
+    "doi": "10.1007/s42250-025-01519-2",
+    "year": "2.026",
+    "rank": "22",
+    "domains": [
+      "Byproducts & Circularity"
+    ],
+    "access": "PAYWALLED",
+    "owner": "JORDI ROYES BUISAN;EDUARDO BARBOSA GORDO;RUBEN VERA DOMINGO",
+    "date": "11/03/2026 11:00"
+  },
+  {
+    "title": "Purification, and characterization of xylanase by Aspergillus krugeri AUMC 15912 utilizing sugarcane bagasse under solid-state fermentation conditions",
+    "authors": "Aya A. A. Abdel-Hafeez; Abdel-Raouf M. Khallil; Elhagag A. Hassan; Osama A. M. Al-Bedak",
+    "abstract": "Optimises SSF production of xylanase on sugarcane bagasse, then purifies and characterises the enzyme (molecular weight, pH/temperature optima, kinetics and inhibitor/salt sensitivity).",
+    "why": "Provides an SSF + enzyme-performance package for bagasse upgrading; relevant if you want enzymatic hydrolysis, prebiotics or downstream bioconversions.",
+    "link": "https://doi.org/10.1186/s12866-026-04742-0",
+    "doi": "10.1186/s12866-026-04742-0",
+    "year": "2.026",
+    "rank": "21",
+    "domains": [
+      "Biotech applied"
+    ],
+    "access": "OPEN",
+    "owner": "",
+    "date": "11/03/2026 0:01"
+  },
+  {
+    "title": "Mycosynthesis of Silica Nanoparticles from Sugarcane Bagasse Using Aspergillus niger MSF3: Optimization and Economic Assessment",
+    "authors": "Mohini Yadav; Nancy George; Vagish Dwibedi",
+    "abstract": "Demonstrates fungal-mediated conversion of sugarcane bagasse into silica nanoparticles using Aspergillus niger, optimises key parameters via RSM, and provides a basic economic assessment suggesting lower cost than commercial SiNPs.",
+    "why": "Shows a credible route from agro-waste to functional inorganic nanomaterials; useful for scouting high-margin valorisation options beyond energy/animal feed.",
+    "link": "https://doi.org/10.1007/s12633-026-03666-8",
+    "doi": "10.1007/s12633-026-03666-8",
+    "year": "2.026",
+    "rank": "20",
+    "domains": [
+      "Materials & Packaging",
+      "Byproducts & Circularity"
+    ],
+    "access": "PAYWALLED",
+    "owner": "",
+    "date": "10/03/2026 0:02"
+  },
+  {
+    "title": "Recent advances in chemical recycling and upcycling of plastic waste into valuable materials, chemicals, and energy: a comprehensive review",
+    "authors": "K. Jan; D. Deka; E. Yu; T. Lu; K. Li; H. Jiang; K. Nawaz; E. Webb; S. Ozcan; R. Zou; L. Dai; H. Lei; R. Ruan; X. Zhao; W. Chen",
+    "abstract": "Comprehensive review of solvent dissolution, catalytic depolymerisation and thermochemical routes for mixed plastics, emphasising selectivity drivers, contaminant handling, scale-up constraints and LCA/TEA considerations.",
+    "why": "Informs packaging end‑of‑life strategy and design‑for‑recycling decisions by clarifying which chem‑recycling pathways are realistic under contamination and cost constraints.",
+    "link": "https://doi.org/10.1039/D5SU00506J",
+    "doi": "10.1039/D5SU00506J",
+    "year": "2.026",
+    "rank": "19",
+    "domains": [
+      "Materials & Packaging"
+    ],
+    "access": "OPEN",
+    "owner": "PABLO TEJERO TRAPIELLA",
+    "date": "10/03/2026 11:00"
+  },
+  {
+    "title": "Rapid and Non-destructive Ethanol Quantification in Beer Using FTIR-ATR Spectroscopy and PLSR Modeling",
+    "authors": "F. Rexhepi| D. Blazhekovikj-Dimovska| B. Hyseni et al.",
+    "abstract": "Demonstrates that FTIR-ATR combined with partial least-squares regression accurately quantifies ethanol content in beer without sample preparation, proposing a rapid non-destructive QC method.",
+    "why": "Validates a low-cost, rapid spectroscopic alternative to reference methods for routine ethanol QC in production, directly applicable to brewery in-line monitoring.",
+    "link": "https://link.springer.com/article/10.1007/s00217-025-04975-9",
+    "doi": "10.1007/s00217-025-04975-9",
+    "year": "2.026",
+    "rank": "18",
+    "domains": [
+      "Analytics & Digital"
+    ],
+    "access": "PAYWALL",
+    "owner": "JORDI ROYES BUISAN",
+    "date": "17/03/2026 7:18"
+  },
+  {
+    "title": "Treatment of landfill leachate and production of geopolymer using electrocoagulation sludge",
+    "authors": "A. Aşkın; H. K. Kırıkbıçak; E. Arıöz; Ü. Tezcan Ün",
+    "abstract": "Optimises electrocoagulation for high‑strength leachate and demonstrates valorisation of Al‑rich EC sludge into fly‑ash geopolymers, reducing disposal burden.",
+    "why": "Gives a circular template: effluent polishing + sludge-to-material valorisation, useful for reducing total treatment cost and waste liabilities.",
+    "link": "https://doi.org/10.1007/s13762-026-07095-3",
+    "doi": "10.1007/s13762-026-07095-3",
+    "year": "2.026",
+    "rank": "17",
+    "domains": [
+      "Water & Environment"
+    ],
+    "access": "OPEN",
+    "owner": "RUBEN VERA DOMINGO;JORDI ROYES BUISAN",
+    "date": "10/03/2026 0:30"
+  },
+  {
+    "title": "Struvite precipitation from source-separated human urine: mineralogical characterization, phosphorus release kinetics, and heavy metal safety assessment",
+    "authors": "Ricardo Franci Gonçalves; Regiane Pereira Roque; Yuri Nascimento Nariyoshi; Renata Estevam; Honerio Coutinho de Jesus",
+    "abstract": "Characterises struvite recovered from stored urine (mineralogy, phosphorus release kinetics) and assesses heavy‑metal safety to judge fertiliser suitability.",
+    "why": "Directly informs nutrient recovery programmes: product quality, release behaviour and compliance risks when converting high‑P side streams into fertiliser.",
+    "link": "https://doi.org/10.1007/s11356-025-37380-6",
+    "doi": "10.1007/s11356-025-37380-6",
+    "year": "2.026",
+    "rank": "16",
+    "domains": [
+      "Water & Environment"
+    ],
+    "access": "OPEN",
+    "owner": "RUBEN VERA DOMINGO;JORDI ROYES BUISAN",
+    "date": "10/03/2026 2:00"
+  },
+  {
+    "title": "Biofilm Properties and Their Implications for Cleaning Processes in the Food Industry – A Review",
+    "authors": "Caroline Bachlechner; Elena Zand; Vincent Eisenrauch; Marc Mauermann; Henry Jäger; Felix Schottroff",
+    "abstract": "Reviews how biofilm structure, rheology and multispecies composition drive cleanability, and why bulk soil metrics often fail to predict CIP outcomes; highlights shear history and matrix heterogeneity as key determinants of resistance.",
+    "why": "Improves CIP design/validation by translating 'biofilm physics' into practical levers (sequencing, shear, chemistry) and risk-based verification metrics.",
+    "link": "https://doi.org/10.1016/j.jfp.2025.100695",
+    "doi": "10.1016/j.jfp.2025.100695",
+    "year": "2.026",
+    "rank": "15",
+    "domains": [
+      "Brewing & Process"
+    ],
+    "access": "OPEN",
+    "owner": "PABLO TEJERO TRAPIELLA;MANUEL AGUINAGA CABREDO",
+    "date": "10/03/2026 1:00"
+  },
+  {
+    "title": "Valorization of brewing by-products: obtaining flavor-enhancing and antioxidant compounds from spent yeast",
+    "authors": "Antonela G. Garzón; Yanina Pavón; Marilin E. Aquino; Silvina R. Drago",
+    "abstract": "Uses response-surface optimisation of autolysis time and temperature to recover flavour‑enhancing compounds from spent brewer’s yeast, balancing umami-related free amino acids with phenolics/antioxidant activity and sensory side-notes.",
+    "why": "Actionable route to convert BSY into a controllable flavour ingredient; provides optimisation logic and measurable targets for sensory + functionality.",
+    "link": "https://doi.org/10.1039/D5FB00499C",
+    "doi": "10.1039/D5FB00499C",
+    "year": "2.026",
+    "rank": "14",
+    "domains": [
+      "Byproducts & Circularity"
+    ],
+    "access": "OPEN",
+    "owner": "RUBEN VERA DOMINGO;JORDI ROYES BUISAN",
+    "date": "10/03/2026 0:10"
+  },
+  {
+    "title": "Valorisation of brewery spent grain for biogas production and nutrient-enriched bioslurry in sustainable agriculture",
+    "authors": "Tewodros Mulu; Bilhate Chala; Yezbie Kassa; Bernhard Freyer; Tarekegne Fentie; Marye Mulugeta; Dessie Tibebe",
+    "abstract": "Reviews anaerobic digestion of brewery spent grain (and co-digestion options) to produce biogas, and discusses use of nutrient‑enriched digestate/bioslurry as an agricultural input, including operational constraints and sustainability considerations.",
+    "why": "Maps an 'energy + nutrients' valorisation route for BSG, helping prioritise configurations that improve waste cost, energy self-sufficiency and circularity outcomes.",
+    "link": "https://doi.org/10.1080/14786451.2026.2629665",
+    "doi": "10.1080/14786451.2026.2629665",
+    "year": "2.026",
+    "rank": "13",
+    "domains": [
+      "Byproducts & Circularity"
+    ],
+    "access": "OPEN",
+    "owner": "RUBEN VERA DOMINGO;JORDI ROYES BUISAN",
+    "date": "10/03/2026 1:00"
+  },
+  {
+    "title": "Impact of different production methods on selected aroma compounds for non-alcoholic beers by developing an HS-SPME GC–MS method",
+    "authors": "Sönke Kienitz; Hubert Kollmannsberger; Annsophie Schreff; Dennis Mayer; Christoph Neugrodda; Thomas Becker",
+    "abstract": "Compares production routes for non-alcoholic beer and validates an HS-SPME GC–MS workflow to quantify key aroma compounds; reports route-dependent shifts in volatiles relevant to sensory perception.",
+    "why": "Direct lever for NOLO aroma QA/QC and process tuning (fermentation/dealcoholization trade-offs).",
+    "link": "https://pubmed.ncbi.nlm.nih.gov/41539195/",
+    "doi": "10.1016/j.foodchem.2026.147924",
+    "year": "2.026",
+    "rank": "12",
+    "domains": [
+      "Brewing & Process"
+    ],
+    "access": "OPEN",
+    "owner": "JORDI ROYES BUISAN;LUIS FERNANDO FRAGUA GONZALEZ",
+    "date": "10/03/2026 1:00"
+  },
+  {
+    "title": "Electrocoagulation of phosphates from alternating wastewaters utilising a hybrid set-up (conference session)",
+    "authors": "Noora Salonen; Kalle Salonen; Marko Suokas; Martti Latva",
+    "abstract": "Descripción de sesión técnica sobre electrocoagulación para remediación de fosfatos usando configuración híbrida de electrodos y distintos tipos de agua.",
+    "why": "Aunque no es paper, es señal temprana aplicable a plantas sin depuración: opciones de EC para PO4 y condiciones operativas.",
+    "link": "https://doi.org/10.1039/D5EW00965K",
+    "doi": "10.1039/D5EW00965K",
+    "year": "2.026",
+    "rank": "11",
+    "domains": [
+      "Water & Environment"
+    ],
+    "access": "OPEN",
+    "owner": "RUBEN VERA DOMINGO;JORDI ROYES BUISAN",
+    "date": "10/03/2026 0:01"
+  },
+  {
+    "title": "Postbiotics and the gut–brain axis: A mechanistic review on modulating neuroinflammation and cognitive decline",
+    "authors": "Antonela G. Garzón; Yanina Pavón; Marilin E. Aquino; Silvina R. Drago",
+    "abstract": "Revisión mecanística sobre interacción microbiota–metabolitos–neuroinflamación, proponiendo postbióticos como estrategia de modulación del eje gut–brain.",
+    "why": "Sirve para ideación en funcionales: qué mecanismos son plausibles y qué compuestos/postbióticos vigilar.",
+    "link": "https://doi.org/10.1039/D5FB00499C",
+    "doi": "10.1039/D5FB00499C",
+    "year": "2.026",
+    "rank": "10",
+    "domains": [
+      "Neuroscience & Functional"
+    ],
+    "access": "OPEN",
+    "owner": "Javier Aldea Garcia;LUIS MIGUEL BARRERA ARBELAEZ",
+    "date": "10/03/2026 1:00"
+  },
+  {
+    "title": "Hypoglycemic effects under in vitro digestion of brewer's spent yeast β-glucan composites (RSC)",
+    "authors": "Miguel A. Sarabia; Alfonso P. Picó; Julio S. Román; Antonio P. Sánchez; Andrés G. Calleja; Francisco J. Méndez",
+    "abstract": "Estudia productos derivados de β‑glucanos de levadura cervecera y su efecto hipoglucemiante in vitro (enzimas α‑amilasa/α‑glucosidasa/DPP‑IV).",
+    "why": "Interesa para líneas de ingredientes funcionales desde BSY y claims/metodología de evaluación.",
+    "link": "https://doi.org/10.1080/14786451.2026.2629665",
+    "doi": "10.1080/14786451.2026.2629665",
+    "year": "2.026",
+    "rank": "9",
+    "domains": [
+      "Byproducts & Circularity"
+    ],
+    "access": "OPEN",
+    "owner": "RUBEN VERA DOMINGO;JORDI ROYES BUISAN",
+    "date": "10/03/2026 14:00"
+  },
+  {
+    "title": "Valorisation of brewery spent grain for biogas production and nutrient recovery: a review",
+    "authors": "Sönke Kienitz; Hubert Kollmannsberger; Annsophie Schreff; Dennis Mayer; Christoph Neugrodda; Thomas Becker",
+    "abstract": "Revisión de valorización de BSG orientada a biogás y recuperación de nutrientes; resume rutas, rendimientos y condicionantes del residuo.",
+    "why": "Aterriza opciones ‘energía + circularidad’ para BSG con perspectiva de implementación.",
+    "link": "https://doi.org/10.1016/j.foodchem.2026.147924",
+    "doi": "10.1016/j.foodchem.2026.147924",
+    "year": "2.026",
+    "rank": "8",
+    "domains": [
+      "Byproducts & Circularity"
+    ],
+    "access": "OPEN",
+    "owner": "RUBEN VERA DOMINGO;JORDI ROYES BUISAN",
+    "date": "10/03/2026 14:00"
+  },
+  {
+    "title": "Process ramanomics: single-cell Raman spectroscopy workflow for rapid monitoring of beer fermentation phenotypes",
+    "authors": "Liu Yang et al. (QIBEBT, Chinese Academy of Sciences)",
+    "abstract": "Develops a \"process ramanomics\" workflow using spontaneous single-cell Raman spectroscopy to predict 19 extracellular phenotypes (higher alcohols, esters, amino acids, sugars) during industrial lager fermentation, revealing cell-to-cell metabolic heterogeneity.",
+    "why": "Pioneers label-free, single-cell PAT for brewing; links intracellular Raman fingerprints to conventional fermentation QC metrics, advancing real-time process monitoring beyond bulk methods.",
+    "link": "https://phys.org/news/2026-01-beer-fermentation-cell-raman-method.html",
+    "doi": "10.1016/j.biortech.2025.133788",
+    "year": "2.026",
+    "rank": "7",
+    "domains": [
+      "Analytics & Digital"
+    ],
+    "access": "OPEN",
+    "owner": "JORDI ROYES BUISAN",
+    "date": "17/03/2026 7:18"
+  },
+  {
+    "title": "Synergistic toughening of biomass poly(ethylene furanoate) with CO2-derived poly(butyl carbonate) (PBC)",
+    "authors": "Authors listed on ScienceDirect/DOAJ record",
+    "abstract": "Estudio experimental que mejora la tenacidad/compatibilidad de PEF mediante blending con PBC derivado de CO2, abordando fragilidad del PEF.",
+    "why": "Relevante para packaging/biomateriales: rutas de formulación para mejorar performance sin perder narrativa de sostenibilidad.",
+    "link": "https://www.sciencedirect.com/science/article/pii/S2589234726000254",
+    "doi": "10.1016/j.mtsust.2026.101324",
+    "year": "2.026",
+    "rank": "6",
+    "domains": [
+      "Materials & Packaging"
+    ],
+    "access": "OPEN",
+    "owner": "PABLO TEJERO TRAPIELLA",
+    "date": "09/03/2026 17:12"
+  },
+  {
+    "title": "Membranes from bio-based poly(ethylene furanoate) and natural solvents (thymol/vanillin) for phase inversion",
+    "authors": "Authors listed on RSC article page",
+    "abstract": "Propone fabricar membranas de PEF por inversión de fase usando un sistema solvente natural (thymol/vanillin) y reporta menor impacto climático vs PET comparable (según el estudio).",
+    "why": "Conecta PEF con sostenibilidad de proceso (solventes) y aplicaciones de separación/filtración.",
+    "link": "https://pubs.rsc.org/en/Content/ArticleLanding/2026/GC/D5GC05422B",
+    "doi": "10.1039/d5gc05422b",
+    "year": "2.026",
+    "rank": "5",
+    "domains": [
+      "Materials & Packaging"
+    ],
+    "access": "OPEN",
+    "owner": "",
+    "date": "09/03/2026 1:00"
+  },
+  {
+    "title": "Emerging smart packaging materials and technologies for ethylene detection and freshness monitoring",
+    "authors": "Authors listed on RSC article page",
+    "abstract": "Revisión de tecnologías de smart packaging para monitorizar frescura y detectar etileno en tiempo real; resume métodos analíticos y materiales/sensores emergentes.",
+    "why": "Aplicable a ‘Smart Pack’: indicadores + sensores para cadena de suministro y reducción de desperdicio.",
+    "link": "https://pubs.rsc.org/en/content/articlehtml/2026/fb/d5fb00379b",
+    "doi": "10.1039/d5fb00379b",
+    "year": "2.026",
+    "rank": "4",
+    "domains": [
+      "Materials & Packaging"
+    ],
+    "access": "OPEN",
+    "owner": "JORDI ROYES BUISAN",
+    "date": "09/03/2026 1:00"
+  },
+  {
+    "title": "A review of innovative approaches for valorizing brewing by-products for food applications and consumer perceptions",
+    "authors": "A. Halahlah| A. Kellil; S. Peltonen; T. M. Ho",
+    "abstract": "Reviews recent extraction, bioprocessing and product development strategies to incorporate brewing solid by-products (BSG, BSY, spent hops) into food, and evaluates consumer perception factors influencing market acceptance.",
+    "why": "Bridges the gap between technical valorization advances and market viability by incorporating consumer-acceptance data alongside processing innovation for brewing by-products.",
+    "link": "https://pubs.rsc.org/en/content/articlelanding/2026/fb/d5fb00545k",
+    "doi": "10.1039/d5fb00545k",
+    "year": "2.026",
+    "rank": "3",
+    "domains": [
+      "Byproducts & Circularity"
+    ],
+    "access": "OPEN",
+    "owner": "PABLO TEJERO TRAPIELLA",
+    "date": "09/03/2026 15:18"
+  },
+  {
+    "title": "Alternative Configurations for the Intensification of the Anaerobic Digestion Process: A Comprehensive Review",
+    "authors": "Juan García Rodríguez (et al.)",
+    "abstract": "Revisión de configuraciones para intensificar AD (termofílica, dos etapas ácido/gas, temperature‑phased, multietapa) con mecanismos, factores y escalabilidad.",
+    "why": "Guía práctica para mejorar rendimiento de AD en planta y priorizar rutas de implementación.",
+    "link": "https://www.mdpi.com/2227-9717/14/4/695",
+    "doi": "10.3390/pr14040695",
+    "year": "2.026",
+    "rank": "2",
+    "domains": [
+      "Water & Environment"
+    ],
+    "access": "OPEN",
+    "owner": "RUBEN VERA DOMINGO",
+    "date": "09/03/2026 1:00"
+  },
+  {
+    "title": "UK land use implications of replacing dairy farming with precision fermentation",
+    "authors": "Jade A. Warren| E. R. Fonseca| H. Woodward",
+    "abstract": "Quantifies land-use implications of scaling precision-fermented dairy protein in the UK, estimating up to 96 % lower land footprint vs. cow's milk and modelling 20–100 % replacement scenarios for 2050.",
+    "why": "Provides macro-level sustainability evidence for PF ingredients; relevant to breweries evaluating PF-derived adjuncts or dairy-alternative functional beverages as part of ESG strategy.",
+    "link": "https://efsa.onlinelibrary.wiley.com/doi/10.2903/j.efsa.2026.9936",
+    "doi": "10.2903/j.efsa.2026.9936",
+    "year": "2.026",
+    "rank": "1",
+    "domains": [
+      "Materials & Packaging"
+    ],
+    "access": "OPEN",
+    "owner": "PABLO TEJERO TRAPIELLA",
+    "date": "09/03/2026 1:00"
   }
 ];
+const DOMAINS = ["Analytics & Digital", "Biotech applied", "Brewing & Process", "Byproducts & Circularity", "Materials & Packaging", "Neuroscience & Functional", "Water & Environment"];
 
-let query = "";
-let sortMode = "default";
+let query  = "";
+let domain = "";
+let sort   = "rank";
+let access = "";
 
-function escape(str) {
-  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+// Build domain pills
+const bar = document.getElementById("filterBar");
+DOMAINS.forEach(d => {
+  const btn = document.createElement("button");
+  btn.className = "pill";
+  btn.dataset.domain = d;
+  btn.textContent = d;
+  btn.onclick = () => setDomain(d);
+  bar.appendChild(btn);
+});
+
+function setDomain(d) {
+  domain = d;
+  bar.querySelectorAll(".pill").forEach(p => p.classList.toggle("active", p.dataset.domain === d));
+  render();
 }
 
-function highlight(text, q) {
-  if (!q) return escape(text);
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function hl(text, q) {
+  if (!q || !text) return esc(text);
   const re = new RegExp("(" + q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") + ")", "gi");
-  return escape(text).replace(re, '<mark class="highlight">$1</mark>');
+  return esc(text).replace(re, "<mark>$1</mark>");
+}
+
+function matches(p, q) {
+  if (!q) return true;
+  const lq = q.toLowerCase();
+  return [p.title, p.authors, p.abstract, p.why, p.owner, ...(p.domains||[])]
+    .some(f => f && f.toLowerCase().includes(lq));
 }
 
 function render() {
   const grid = document.getElementById("grid");
-  const q = query.toLowerCase().trim();
+  const q = query.trim();
 
-  let papers = [...PAPERS];
+  let list = PAPERS.filter(p =>
+    matches(p, q) &&
+    (!domain || (p.domains||[]).includes(domain)) &&
+    (!access || p.access === access)
+  );
 
-  if (q) {
-    papers = papers.filter(p =>
-      p.title.toLowerCase().includes(q) ||
-      p.authors.toLowerCase().includes(q) ||
-      p.abstract.toLowerCase().includes(q)
-    );
-  }
+  if (sort === "title") list.sort((a,b) => a.title.localeCompare(b.title));
+  else if (sort === "year") list.sort((a,b) => (b.year||"").localeCompare(a.year||""));
+  else list.sort((a,b) => (parseInt(b.rank)||0) - (parseInt(a.rank)||0));
 
-  if (sortMode === "title") {
-    papers.sort((a, b) => a.title.localeCompare(b.title));
-  }
+  document.getElementById("topbar-count").textContent = list.length + " papers";
 
-  document.getElementById("counter").textContent = papers.length;
-
-  if (papers.length === 0) {
-    grid.innerHTML = '<div class="no-results">No se encontraron papers para esa búsqueda.</div>';
+  if (!list.length) {
+    grid.innerHTML = '<div class="no-results">No hay resultados para esta búsqueda.</div>';
     return;
   }
 
-  grid.innerHTML = papers.map((p, i) => `
-    <article class="card">
-      <div class="card-top">
-        <div class="card-num">${i + 1}</div>
-        <div class="card-body">
-          <div class="card-title">${highlight(p.title, q)}</div>
-          ${p.authors ? `<div class="card-authors">${highlight(p.authors, q)}</div>` : ""}
-          ${p.abstract ? `<div class="card-abstract" id="abs-${i}">${highlight(p.abstract, q)}</div>` : ""}
+  grid.innerHTML = list.map((p, i) => {
+    const domains = (p.domains||[]).map(d => `<span class="domain-tag">${esc(d)}</span>`).join(" ");
+    const accessClass = p.access === "OPEN" ? "open" : "paywall";
+    const accessLabel = p.access === "OPEN" ? "Open" : p.access === "PAYWALL" ? "Paywall" : p.access;
+
+    return `
+    <article class="card" id="card-${i}">
+      <div class="card-row1">
+        ${p.rank ? `<div class="rank-badge">${esc(p.rank)}</div>` : ""}
+        <div class="card-main">
+          <div class="card-title" onclick="${p.link ? `window.open('${esc(p.link)}','_blank')` : ""}">${hl(p.title, q)}</div>
+          <div class="card-meta">
+            ${p.authors ? `<span class="meta-item"><svg width="11" height="11" fill="currentColor" viewBox="0 0 20 20"><path d="M10 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 8a7 7 0 0 1 14 0H3z"/></svg>${hl(p.authors, q)}</span>` : ""}
+            ${p.year ? `<span class="meta-item">${esc(p.year)}</span>` : ""}
+            ${accessLabel ? `<span class="access-badge ${accessClass}">${esc(accessLabel)}</span>` : ""}
+            ${domains}
+          </div>
+          ${p.abstract ? `<div class="card-abstract" id="abs-${i}">${hl(p.abstract, q)}</div>` : ""}
+          ${p.why ? `<div class="why-box" id="why-${i}">${hl(p.why, q)}</div>` : ""}
         </div>
       </div>
-      <div class="card-footer">
-        ${p.abstract && p.abstract.length > 200
-          ? `<button class="btn-expand" onclick="toggleAbstract(${i}, this)">Ver más ▾</button>`
-          : '<span></span>'
-        }
-        ${p.link
-          ? `<a class="btn-link" href="${escape(p.link)}" target="_blank" rel="noopener">
-               Ver paper
-               <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                 <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-               </svg>
-             </a>`
-          : ""
-        }
+      <div class="card-row2">
+        <div class="card-actions">
+          ${p.abstract && p.abstract.length > 120
+            ? `<button class="btn-toggle" onclick="toggleAbs(${i}, this)">▾ Ver resumen</button>`
+            : '<span></span>'
+          }
+          ${p.why ? `<button class="btn-toggle" onclick="toggleWhy(${i}, this)" style="color:#605e5c">💡 ¿Por qué?</button>` : ""}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${p.owner ? `<span class="owner-chip" title="${esc(p.owner)}">${esc(p.owner.split(";")[0].trim())}</span>` : ""}
+          ${p.link ? `<a class="btn-open" href="${esc(p.link)}" target="_blank" rel="noopener">
+            Abrir
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </a>` : ""}
+        </div>
       </div>
-    </article>
-  `).join("");
+    </article>`;
+  }).join("");
 }
 
-function toggleAbstract(i, btn) {
+function toggleAbs(i, btn) {
   const el = document.getElementById("abs-" + i);
-  const expanded = el.classList.toggle("expanded");
-  btn.textContent = expanded ? "Ver menos ▴" : "Ver más ▾";
+  const on = el.classList.toggle("expanded");
+  btn.textContent = on ? "▴ Ocultar resumen" : "▾ Ver resumen";
 }
 
-document.getElementById("searchInput").addEventListener("input", e => {
-  query = e.target.value;
-  render();
-});
+function toggleWhy(i, btn) {
+  const el = document.getElementById("why-" + i);
+  const on = el.classList.toggle("visible");
+  btn.textContent = on ? "💡 Ocultar" : "💡 ¿Por qué?";
+}
 
-document.getElementById("sortSelect").addEventListener("change", e => {
-  sortMode = e.target.value;
-  render();
-});
+document.getElementById("searchInput").addEventListener("input", e => { query = e.target.value; render(); });
+document.getElementById("sortSelect").addEventListener("change", e => { sort = e.target.value; render(); });
+document.getElementById("accessSelect").addEventListener("change", e => { access = e.target.value; render(); });
 
 render();
 </script>
