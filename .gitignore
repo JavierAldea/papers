@@ -1,1 +1,2 @@
-pdfs/**/*.pdf
+.DS_Store
+watcher.log
