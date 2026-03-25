@@ -170,7 +170,7 @@
   .pill.active { background: var(--ms-blue); border-color: var(--ms-blue); color: white; font-weight: 600; }
 
   /* CARDS */
-  main { max-width: 1200px; margin: 20px auto; padding: 0 24px 40px; display: grid; gap: 0; }
+  main { margin: 20px 24px 40px; display: grid; gap: 0; }
   .card {
     background: white;
     border: 1px solid #e8ecf0;
@@ -213,10 +213,8 @@
   }
   .card-abstract {
     font-size: 13px; color: var(--ms-muted); line-height: 1.55;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-    transition: all 0.3s ease;
+    margin-top: 6px;
   }
-  .card-abstract.expanded { -webkit-line-clamp: unset; display: block; overflow: visible; }
   .card-row2 {
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 10px; flex-wrap: wrap; gap: 8px;
@@ -331,9 +329,8 @@
   /* RADAR VIEW */
   #radarView {
     display: none;
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px 40px;
+    margin: 20px 24px 40px;
+    padding: 0;
     gap: 16px;
   }
   #radarView.active {
@@ -782,10 +779,7 @@ function render() {
       </div>
       <div class="card-row2">
         <div class="card-actions">
-          ${p.abstract && p.abstract.length > 120
-            ? `<button class="btn-toggle" onclick="toggleAbstract(this)">▸ Ver resumen</button>`
-            : "<span></span>"}
-          ${p.why ? `<button class="btn-toggle" onclick="toggleWhy(this)" style="color:#605e5c">💡 ¿Por qué?</button>` : ""}
+          ${p.why ? `<button class="btn-toggle" onclick="toggleWhy(this)">💡 ¿Por qué?</button>` : ""}
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           ${p.owner ? `<span class="owner-chip" title="${esc(p.owner)}">${esc(p.owner.split(";")[0].trim())}</span>` : ""}
@@ -796,19 +790,13 @@ function render() {
   }).join("");
 }
 
-function toggleAbstract(btn) {
-  const abstract = btn.closest('.card').querySelector('.card-abstract');
-  const isOpen = abstract.classList.toggle('expanded');
-  btn.textContent = isOpen ? '▾ Ocultar resumen' : '▸ Ver resumen';
-}
 function toggleWhy(btn) {
   const why = btn.closest('.card').querySelector('.why-box');
   if (!why) return;
   const isOpen = why.classList.toggle('open');
   btn.textContent = isOpen ? '💡 Ocultar' : '💡 ¿Por qué?';
 }
-// Exponer en scope global por si onclick inline las necesita
-window.toggleAbstract = toggleAbstract;
+// Exponer en scope global por si onclick inline lo necesita
 window.toggleWhy = toggleWhy;
 
 // ── Vista switch ──
