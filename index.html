@@ -214,8 +214,9 @@
   .card-abstract {
     font-size: 13px; color: var(--ms-muted); line-height: 1.55;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    transition: all 0.3s ease;
   }
-  .card-abstract.expanded { -webkit-line-clamp: unset; }
+  .card-abstract.expanded { -webkit-line-clamp: unset; overflow: visible; }
   .card-row2 {
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 10px; flex-wrap: wrap; gap: 8px;
@@ -234,6 +235,20 @@
     display: inline-flex; align-items: center; gap: 5px; transition: background .15s;
   }
   .btn-open:hover { background: var(--ms-blue-dk); }
+  .btn-paywall { background: #7c3aed !important; }
+  .btn-paywall:hover { background: #6d28d9 !important; }
+  .btn-link-small {
+    background: transparent !important; color: #64748b !important;
+    border: 1px solid #cbd5e1 !important; padding: 0 10px !important;
+    font-size: 12px !important; min-width: auto !important;
+  }
+  .btn-link-small:hover { background: #f1f5f9 !important; color: #334155 !important; }
+  .date-chip {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 8px; border-radius: 10px; font-size: 11px;
+    color: #94a3b8; background: #f8fafc; border: 1px solid #e2e8f0;
+    margin-left: 6px; cursor: default; white-space: nowrap;
+  }
   .owner-chip {
     font-size: 11px; color: var(--ms-gray4);
     background: var(--ms-gray1); border: 1px solid var(--ms-gray2);
@@ -246,7 +261,7 @@
     border-radius: 0 var(--radius) var(--radius) 0;
     font-size: 12px; color: var(--ms-muted); line-height: 1.5; display: none;
   }
-  .why-box.visible { display: block; }
+  .why-box.open { display: block; }
 
   /* SCORE BARS */
   .score-bars {
@@ -480,11 +495,6 @@
     <option value="year">Ordenar: Año</option>
     <option value="title">Ordenar: A–Z</option>
   </select>
-  <select class="ms-select" id="accessSelect" disabled>
-    <option value="">Acceso: Todos</option>
-    <option value="OPEN">Solo Open Access</option>
-    <option value="PAYWALL">Solo Paywall</option>
-  </select>
 </div>
 
 <div class="filter-bar" id="filterBar">
@@ -605,7 +615,7 @@ function normalizePapers(records) {
 }
 
 // ── Estado ──
-let PAPERS = [], query = "", domain = "", sort = "combined", access = "";
+let PAPERS = [], query = "", domain = "", sort = "combined";
 
 function allDomains(papers) {
   const seen = new Set(), list = [];
@@ -664,6 +674,22 @@ function updateStatsBar(list) {
   bar.innerHTML = html;
 }
 
+// ── Tiempo relativo ──
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+  if (!parts) return '';
+  const date = new Date(parseInt(parts[3]), parseInt(parts[2])-1, parseInt(parts[1]), parseInt(parts[4]), parseInt(parts[5]));
+  const diffDays = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
+  if (diffDays < 0) return 'futuro';
+  if (diffDays === 0) return 'hoy';
+  if (diffDays === 1) return 'ayer';
+  if (diffDays < 7) return `hace ${diffDays}d`;
+  if (diffDays < 30) return `hace ${Math.floor(diffDays/7)}sem`;
+  if (diffDays < 365) return `hace ${Math.floor(diffDays/30)}m`;
+  return `hace ${Math.floor(diffDays/365)}a`;
+}
+
 // ── Render lista ──
 function render() {
   const grid = document.getElementById("grid");
@@ -671,8 +697,7 @@ function render() {
 
   let list = PAPERS.filter(p =>
     matches(p, q) &&
-    (!domain || p.domains.includes(domain)) &&
-    (!access || p.access === access)
+    (!domain || p.domains.includes(domain))
   );
 
   if      (sort === "combined")  list.sort((a,b) => b.combinedScore  - a.combinedScore);
@@ -739,6 +764,7 @@ function render() {
             ${p.year    ? `<span class="meta-item">${esc(p.year)}</span>` : ""}
             ${aLabel    ? `<span class="access-badge ${aClass}">${esc(aLabel)}</span>` : ""}
             ${dtags}
+            ${p.date ? `<span class="date-chip" title="Añadido: ${esc(p.date)}">📥 ${timeAgo(p.date)}</span>` : ""}
           </div>
           ${scoreBars}
           ${p.abstract ? `<div class="card-abstract" id="abs-${p._id}">${hl(p.abstract, q)}</div>` : ""}
@@ -749,13 +775,15 @@ function render() {
       <div class="card-row2">
         <div class="card-actions">
           ${p.abstract && p.abstract.length > 120
-            ? `<button class="btn-toggle" onclick="toggleAbs(${p._id}, this)">▾ Ver resumen</button>`
+            ? `<button class="btn-toggle" onclick="toggleAbstract(this)">▸ Ver resumen</button>`
             : "<span></span>"}
-          ${p.why ? `<button class="btn-toggle" onclick="toggleWhy(${p._id}, this)" style="color:#605e5c">💡 ¿Por qué?</button>` : ""}
+          ${p.why ? `<button class="btn-toggle" onclick="toggleWhy(this)" style="color:#605e5c">💡 ¿Por qué?</button>` : ""}
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           ${p.owner ? `<span class="owner-chip" title="${esc(p.owner)}">${esc(p.owner.split(";")[0].trim())}</span>` : ""}
-          ${href ? `<a class="btn-open" href="${esc(href)}" target="_blank" rel="noopener">
+          ${p.access === "PAYWALL" && p.rank
+            ? `<a class="btn-open btn-paywall" href="pdfs/${esc(p.rank)}/paper.pdf" target="_blank" title="Abrir PDF local (Rank ${esc(p.rank)})">📄 PDF</a>${href ? `<a class="btn-open btn-link-small" href="${esc(href)}" target="_blank" rel="noopener" title="Ver en web">🔗</a>` : ""}`
+            : href ? `<a class="btn-open" href="${esc(href)}" target="_blank" rel="noopener">
             Abrir
             <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -768,15 +796,16 @@ function render() {
   }).join("");
 }
 
-function toggleAbs(id, btn) {
-  const el = document.getElementById("abs-" + id);
-  const on = el.classList.toggle("expanded");
-  btn.textContent = on ? "▴ Ocultar resumen" : "▾ Ver resumen";
+function toggleAbstract(btn) {
+  const abstract = btn.closest('.card').querySelector('.card-abstract');
+  const isOpen = abstract.classList.toggle('expanded');
+  btn.textContent = isOpen ? '▾ Ocultar resumen' : '▸ Ver resumen';
 }
-function toggleWhy(id, btn) {
-  const el = document.getElementById("why-" + id);
-  const on = el.classList.toggle("visible");
-  btn.textContent = on ? "💡 Ocultar" : "💡 ¿Por qué?";
+function toggleWhy(btn) {
+  const why = btn.closest('.card').querySelector('.why-box');
+  if (!why) return;
+  const isOpen = why.classList.toggle('open');
+  btn.textContent = isOpen ? '💡 Ocultar' : '💡 ¿Por qué?';
 }
 
 // ── Vista switch ──
@@ -948,11 +977,9 @@ function heatCellClick(e) {
 
 // ── Scroll a tarjeta desde scatter ──
 function scrollToCard(pid) {
-  query = ""; access = ""; domain = "";
+  query = ""; domain = "";
   const si = document.getElementById("searchInput");
-  const ai = document.getElementById("accessSelect");
   if (si) si.value = "";
-  if (ai) ai.value = "";
   document.querySelectorAll("#filterBar .pill").forEach(p => p.classList.toggle("active", p.dataset.domain === ""));
   switchView("list");
   render();
@@ -977,9 +1004,8 @@ function showTooltip(e, title, scores) {
 function hideTooltip() { _tooltip.style.display = "none"; }
 
 // ── Controles ──
-document.getElementById("searchInput").addEventListener("input",  e => { query  = e.target.value; render(); });
-document.getElementById("sortSelect").addEventListener("change",  e => { sort   = e.target.value; render(); });
-document.getElementById("accessSelect").addEventListener("change",e => { access = e.target.value; render(); });
+document.getElementById("searchInput").addEventListener("input",  e => { query = e.target.value; render(); });
+document.getElementById("sortSelect").addEventListener("change",  e => { sort  = e.target.value; render(); });
 document.querySelector(".pill[data-domain='']").onclick = () => setDomain("");
 
 // ── Auth ──
@@ -1029,7 +1055,7 @@ function loadCSV() {
       const records = csvToObjects(rows);
       PAPERS        = normalizePapers(records);
       buildDomainPills(PAPERS);
-      ["searchInput","sortSelect","accessSelect"].forEach(id => document.getElementById(id).disabled = false);
+      ["searchInput","sortSelect"].forEach(id => document.getElementById(id).disabled = false);
       render();
     })
     .catch(err => {
