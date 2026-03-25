@@ -235,6 +235,8 @@
   .btn-open:hover { background: var(--ms-blue-dk); }
   .btn-pdf { background: #7c3aed; }
   .btn-pdf:hover { background: #6d28d9; }
+  .btn-paywall-link { background: #d97706; }
+  .btn-paywall-link:hover { background: #b45309; }
   .btn-web-small {
     background: transparent; color: #64748b;
     border: 1px solid #e2e8f0; padding: 0 10px;
@@ -741,6 +743,8 @@ function render() {
     if (pdfFile) {
       openBtns = `<a class="btn-open btn-pdf" href="pdfs/${esc(p.rank)}/${esc(pdfFile)}" target="_blank">PDF</a>`;
       if (href) openBtns += ` <a class="btn-open btn-web-small" href="${esc(href)}" target="_blank" rel="noopener">web</a>`;
+    } else if (p.access === "PAYWALL" && href) {
+      openBtns = `<a class="btn-open btn-paywall-link" href="${esc(href)}" target="_blank" rel="noopener" title="Acceso de pago">🔒 Acceder</a>`;
     } else if (href) {
       openBtns = `<a class="btn-open" href="${esc(href)}" target="_blank" rel="noopener">Abrir <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`;
     }
