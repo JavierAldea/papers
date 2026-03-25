@@ -170,7 +170,7 @@
   .pill.active { background: var(--ms-blue); border-color: var(--ms-blue); color: white; font-weight: 600; }
 
   /* CARDS */
-  main { max-width: 900px; margin: 20px auto; padding: 0 20px 40px; display: grid; gap: 0; }
+  main { max-width: 1200px; margin: 20px auto; padding: 0 24px 40px; display: grid; gap: 0; }
   .card {
     background: white;
     border: 1px solid #e8ecf0;
@@ -235,14 +235,15 @@
     display: inline-flex; align-items: center; gap: 5px; transition: background .15s;
   }
   .btn-open:hover { background: var(--ms-blue-dk); }
-  .btn-paywall { background: #7c3aed !important; }
-  .btn-paywall:hover { background: #6d28d9 !important; }
-  .btn-link-small {
-    background: transparent !important; color: #64748b !important;
-    border: 1px solid #cbd5e1 !important; padding: 0 10px !important;
-    font-size: 12px !important; min-width: auto !important;
+  .btn-pdf { background: #7c3aed; }
+  .btn-pdf:hover { background: #6d28d9; }
+  .btn-web-small {
+    background: transparent; color: #64748b;
+    border: 1px solid #e2e8f0; padding: 0 10px;
+    font-size: 12px;
   }
-  .btn-link-small:hover { background: #f1f5f9 !important; color: #334155 !important; }
+  .btn-web-small:hover { background: #f8fafc; }
+  .btn-disabled { background: #f1f5f9; color: #94a3b8; cursor: default; }
   .date-chip {
     display: inline-flex; align-items: center; gap: 2px;
     padding: 1px 7px; border-radius: 8px; font-size: 10px;
@@ -306,7 +307,9 @@
     padding: 5px 10px; margin: 2px 0;
     background: #fafbfc; border-radius: 6px;
     font-size: 11px; border-left: 2px solid #e2e8f0;
+    cursor: pointer; transition: background 0.15s ease;
   }
+  .tag-match-item:hover { background: #f1f5f9; border-left-color: #818cf8; }
   .tag-match-name { font-weight: 500; color: #334155; }
   .tag-match-meta { color: #94a3b8; font-size: 10px; }
   .tag-match-phrases { color: #10b981; font-size: 10px; }
@@ -328,7 +331,7 @@
   /* RADAR VIEW */
   #radarView {
     display: none;
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 20px auto;
     padding: 0 20px 40px;
     gap: 16px;
@@ -611,7 +614,7 @@ function normalizePapers(records) {
 }
 
 // ── Estado ──
-let PAPERS = [], query = "", domain = "", sort = "combined";
+let PAPERS = [], PDF_INDEX = {}, query = "", domain = "", sort = "combined";
 
 function allDomains(papers) {
   const seen = new Set(), list = [];
@@ -736,14 +739,23 @@ function render() {
         </div>
       </div>` : "";
 
+    const pdfFile = PDF_INDEX[String(p.rank)];
+    let openBtns = '';
+    if (pdfFile) {
+      openBtns = `<a class="btn-open btn-pdf" href="pdfs/${esc(p.rank)}/${esc(pdfFile)}" target="_blank">PDF</a>`;
+      if (href) openBtns += ` <a class="btn-open btn-web-small" href="${esc(href)}" target="_blank" rel="noopener">web</a>`;
+    } else if (href) {
+      openBtns = `<a class="btn-open" href="${esc(href)}" target="_blank" rel="noopener">Abrir <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`;
+    }
+
     const tagMatchesHtml = p.matchedTags.length > 0 ? `
       <button class="btn-tags" onclick="this.nextElementSibling.classList.toggle('open')">
         🔗 ${p.tagMatches} tag match${p.tagMatches !== 1 ? "es" : ""} ▸
       </button>
       <div class="tag-matches">
         ${p.matchedTags.map(t => `
-          <div class="tag-match-item">
-            <span class="tag-match-name">${esc(String(t.tag||"").substring(0,55))}</span>
+          <div class="tag-match-item" onclick="setDomain('${esc(t.domain||"")}');window.scrollTo(0,0);" title="Filtrar por ${esc(t.domain||"")}">
+            <span class="tag-match-name">${esc(String(t.tag||"").substring(0,50))}</span>
             <span class="tag-match-meta">${esc(t.domain||"")} · ${Math.round((t.strength||0)*100)}%</span>
             ${t.phrases && t.phrases.length ? `<span class="tag-match-phrases">${esc(t.phrases.slice(0,2).join(", "))}</span>` : ""}
           </div>`).join("")}
@@ -777,15 +789,7 @@ function render() {
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           ${p.owner ? `<span class="owner-chip" title="${esc(p.owner)}">${esc(p.owner.split(";")[0].trim())}</span>` : ""}
-          ${p.access === "PAYWALL" && p.rank
-            ? `<a class="btn-open btn-paywall" href="pdfs/${esc(p.rank)}/paper.pdf" target="_blank" title="Abrir PDF local (Rank ${esc(p.rank)})">📄 PDF</a>${href ? `<a class="btn-open btn-link-small" href="${esc(href)}" target="_blank" rel="noopener" title="Ver en web">🔗</a>` : ""}`
-            : href ? `<a class="btn-open" href="${esc(href)}" target="_blank" rel="noopener">
-            Abrir
-            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-              <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-            </svg>
-          </a>` : ""}
+          ${openBtns}
         </div>
       </div>
     </article>`;
@@ -803,6 +807,9 @@ function toggleWhy(btn) {
   const isOpen = why.classList.toggle('open');
   btn.textContent = isOpen ? '💡 Ocultar' : '💡 ¿Por qué?';
 }
+// Exponer en scope global por si onclick inline las necesita
+window.toggleAbstract = toggleAbstract;
+window.toggleWhy = toggleWhy;
 
 // ── Vista switch ──
 function switchView(view) {
@@ -1041,6 +1048,12 @@ if (sessionStorage.getItem("tv_auth") === "1") {
 
 // ── Carga CSV ──
 function loadCSV() {
+  // Índice de PDFs — carga en paralelo, re-render cuando llega
+  fetch("pdfs/index.json")
+    .then(r => r.ok ? r.json() : {})
+    .catch(() => ({}))
+    .then(idx => { PDF_INDEX = idx; if (PAPERS.length) render(); });
+
   fetch("papers.csv")
     .then(r => {
       if (!r.ok) throw new Error("No se pudo cargar papers.csv (" + r.status + ")");
