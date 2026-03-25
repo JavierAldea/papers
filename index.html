@@ -43,13 +43,56 @@
   }
   .topbar h1 { font-size: 15px; font-weight: 600; }
   .topbar-count {
-    margin-left: auto;
     background: rgba(255,255,255,.2);
     border-radius: 12px;
     padding: 2px 10px;
     font-size: 12px;
     font-weight: 600;
+    white-space: nowrap;
   }
+
+  /* VIEW TOGGLE */
+  .view-toggle {
+    display: flex;
+    gap: 3px;
+    background: rgba(255,255,255,.15);
+    border-radius: 8px;
+    padding: 3px;
+    margin-left: auto;
+  }
+  .view-btn {
+    padding: 4px 12px;
+    border: none;
+    background: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    color: rgba(255,255,255,.75);
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .view-btn.active {
+    background: white;
+    color: var(--ms-blue-dk);
+    font-weight: 600;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--ms-white);
+    border-bottom: 1px solid var(--ms-gray3);
+    padding: 5px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--ms-muted);
+    flex-wrap: wrap;
+    min-height: 30px;
+  }
+  .stats-bar .sv { font-weight: 700; }
+  .stats-bar .ss { color: var(--ms-gray3); }
 
   /* COMMAND BAR */
   .commandbar {
@@ -177,7 +220,7 @@
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 10px; flex-wrap: wrap; gap: 8px;
   }
-  .card-actions { display: flex; gap: 6px; align-items: center; }
+  .card-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   .btn-toggle {
     background: none; border: none; color: var(--ms-blue);
     font: inherit; font-size: 12px; cursor: pointer; padding: 0;
@@ -205,6 +248,58 @@
   }
   .why-box.visible { display: block; }
 
+  /* SCORE BARS */
+  .score-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 6px 0;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+  }
+  .score-row { display: flex; align-items: center; gap: 8px; }
+  .score-label {
+    width: 58px; color: #64748b; font-weight: 500;
+    font-size: 10px; text-transform: uppercase; letter-spacing: .5px;
+    flex-shrink: 0;
+  }
+  .score-track {
+    flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;
+  }
+  .score-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+  .score-fill.global   { background: #f97316; }
+  .score-fill.internal { background: #818cf8; }
+  .score-fill.combined { background: #10b981; }
+  .score-value {
+    width: 34px; text-align: right; font-weight: 700;
+    font-family: monospace; font-size: 11px; flex-shrink: 0;
+  }
+
+  /* TAG MATCHES */
+  .btn-tags {
+    background: none; border: none; color: #818cf8;
+    font: inherit; font-size: 12px; cursor: pointer; padding: 2px 0; margin-top: 4px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .btn-tags:hover { color: #6366f1; text-decoration: underline; }
+  .tag-matches {
+    max-height: 0; overflow: hidden;
+    transition: max-height .3s ease, padding .3s ease;
+    padding: 0;
+  }
+  .tag-matches.open { max-height: 300px; padding: 6px 0 2px; }
+  .tag-match-item {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    padding: 4px 8px; margin: 2px 0;
+    background: #f8fafc; border-radius: 4px;
+    font-size: 11px; border-left: 3px solid #818cf8;
+  }
+  .tag-match-name { font-weight: 500; color: #334155; }
+  .tag-match-meta { color: #94a3b8; font-size: 10px; }
+  .tag-match-phrases { color: #10b981; font-size: 10px; }
+
   /* LOADING / EMPTY */
   .state-box {
     text-align: center; color: var(--ms-muted);
@@ -218,10 +313,65 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   mark { background: #fff3cd; border-radius: 2px; padding: 0 1px; }
-  @media(max-width:600px) {
-    .topbar h1 { font-size: 13px; }
-    .card { padding: 12px; }
-    .rank-badge { min-width: 30px; height: 30px; font-size: 11px; }
+
+  /* RADAR VIEW */
+  #radarView {
+    display: none;
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 20px 40px;
+    gap: 16px;
+  }
+  #radarView.active {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .radar-panel {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--ms-gray3);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .radar-panel h3 {
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .scatter-dot { cursor: pointer; }
+  .scatter-dot:hover { filter: brightness(.8); }
+  .heatmap-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .heatmap-table th {
+    padding: 5px 4px; font-weight: 600; font-size: 10px;
+    text-align: center; color: #64748b; border-bottom: 1px solid #e2e8f0;
+  }
+  .heatmap-table td {
+    padding: 5px 4px; text-align: center;
+    font-family: monospace; font-size: 11px; font-weight: 600;
+    transition: background .2s;
+  }
+  .heatmap-table td:first-child {
+    text-align: left; font-family: inherit; font-weight: 400;
+    max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    cursor: pointer; color: var(--ms-blue-dk);
+  }
+  .heatmap-table td:first-child:hover { text-decoration: underline; }
+  .heatmap-table td:not(:first-child):not(:last-child) { cursor: pointer; border-radius: 3px; }
+  .heatmap-table tr:hover td { background-color: rgba(0,120,212,.04) !important; }
+  .heatmap-table tr:hover td:first-child { background-color: rgba(0,120,212,.04); }
+
+  /* TOOLTIP */
+  #tooltip {
+    position: fixed; display: none; z-index: 9999;
+    background: #1e293b; color: white;
+    padding: 8px 12px; border-radius: 6px;
+    font-size: 12px; line-height: 1.5;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,.3);
+    max-width: 240px;
   }
 
   /* LOGIN */
@@ -249,16 +399,10 @@
   .login-card h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
   .login-card p  { font-size: 13px; color: var(--ms-muted); margin-bottom: 24px; }
   .login-field {
-    width: 100%;
-    height: 36px;
-    padding: 0 12px;
-    border: 1px solid var(--ms-gray3);
-    border-radius: var(--radius);
-    font: inherit; font-size: 14px;
-    color: var(--ms-text);
-    outline: none;
-    margin-bottom: 12px;
-    transition: border-color .15s;
+    width: 100%; height: 36px; padding: 0 12px;
+    border: 1px solid var(--ms-gray3); border-radius: var(--radius);
+    font: inherit; font-size: 14px; color: var(--ms-text);
+    outline: none; margin-bottom: 12px; transition: border-color .15s;
   }
   .login-field:focus { border-color: var(--ms-blue); box-shadow: 0 0 0 1px var(--ms-blue); }
   .login-field.error { border-color: #d13438; box-shadow: 0 0 0 1px #d13438; }
@@ -270,9 +414,16 @@
     cursor: pointer; transition: background .15s;
   }
   .login-btn:hover { background: var(--ms-blue-dk); }
-  .login-error {
-    font-size: 12px; color: #d13438;
-    margin-top: 10px; display: none;
+  .login-error { font-size: 12px; color: #d13438; margin-top: 10px; display: none; }
+
+  @media(max-width:900px) {
+    #radarView.active { grid-template-columns: 1fr; }
+  }
+  @media(max-width:600px) {
+    .topbar h1 { font-size: 13px; }
+    .card { padding: 12px; }
+    .rank-badge { min-width: 30px; height: 30px; font-size: 11px; }
+    .view-btn { padding: 4px 8px; font-size: 11px; }
   }
 </style>
 </head>
@@ -294,13 +445,20 @@
 </div>
 
 <div id="app" style="display:none">
+
 <div class="topbar">
   <svg width="20" height="20" viewBox="0 0 20 20" fill="white">
     <path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h10v2H2z"/>
   </svg>
   <h1>TechVigilance</h1>
+  <div class="view-toggle">
+    <button class="view-btn active" data-view="list" onclick="switchView('list')">📋 Lista</button>
+    <button class="view-btn" data-view="radar" onclick="switchView('radar')">📡 Radar</button>
+  </div>
   <span class="topbar-count" id="topbar-count">Cargando…</span>
 </div>
+
+<div class="stats-bar" id="statsBar"></div>
 
 <div class="commandbar">
   <div class="search-box">
@@ -311,7 +469,10 @@
   </div>
   <div class="sep"></div>
   <select class="ms-select" id="sortSelect" disabled>
-    <option value="rank">Ordenar: Relevancia</option>
+    <option value="combined">Ordenar: Combined Score</option>
+    <option value="global">Ordenar: Global Score</option>
+    <option value="internal">Ordenar: Internal Score</option>
+    <option value="rank">Ordenar: Rank original</option>
     <option value="year">Ordenar: Año</option>
     <option value="title">Ordenar: A–Z</option>
   </select>
@@ -331,15 +492,36 @@
   <div class="state-box"><div class="spinner"></div>Cargando papers…</div>
 </main>
 
-<script>
-// ── CSV parser que maneja campos entre comillas con comas dentro ──
-function parseCSV(text) {
-  // Eliminar BOM si existe
-  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+<div id="radarView">
+  <div class="radar-panel">
+    <h3>📡 Global vs Internal Score</h3>
+    <div id="scatterContainer"></div>
+  </div>
+  <div class="radar-panel">
+    <h3>🔥 Heatmap Papers × Dominios</h3>
+    <div id="heatmapContainer"></div>
+  </div>
+</div>
 
+<div id="tooltip"></div>
+
+<script>
+// ── Colores de dominio (compartidos por scatter, heatmap y cards) ──
+const DOM_COLORS = {
+  'Brewing & Process':        '#f97316',
+  'Byproducts & Circularity': '#10b981',
+  'Materials & Packaging':    '#818cf8',
+  'Water & Environment':      '#38bdf8',
+  'Biotech applied':          '#ec4899',
+  'Analytics & Digital':      '#a78bfa',
+  'Neuroscience & Functional':'#eab308'
+};
+
+// ── CSV parser ──
+function parseCSV(text) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
   const rows = [];
   let row = [], field = "", inQuote = false, i = 0;
-
   while (i < text.length) {
     const ch = text[i];
     if (inQuote) {
@@ -390,26 +572,36 @@ function parseListField(val) {
 
 function normalizePapers(records) {
   return records
-    .map(r => ({
-      title:   get(r, "title", "titulo"),
-      authors: get(r, "authors", "autores", "author"),
-      abstract:get(r, "abstractmini", "abstract", "resumen"),
-      why:     get(r, "whyrelevant", "relevance"),
-      link:    get(r, "primaryurl", "url", "link"),
-      doi:     get(r, "doi"),
-      year:    get(r, "year", "año"),
-      rank:    get(r, "paperrank", "rank"),
-      domains: parseListField(get(r, "domain")),
-      access:  (parseListField(get(r, "access"))[0] || "").toUpperCase(),
-      owner:   get(r, "owner"),
-      date:    get(r, "dateadded", "date"),
-    }))
-    .filter(p => p.title)
-    .sort((a, b) => (parseInt(b.rank) || 0) - (parseInt(a.rank) || 0));
+    .map((r, idx) => {
+      let matchedTags = [];
+      try { matchedTags = JSON.parse(r.matchedtags || '[]'); } catch(e) {}
+      return {
+        _id:           idx,
+        title:         get(r, "title", "titulo"),
+        authors:       get(r, "authors", "autores", "author"),
+        abstract:      get(r, "abstractmini", "abstract", "resumen"),
+        why:           get(r, "whyrelevant", "relevance"),
+        link:          get(r, "primaryurl", "url", "link"),
+        doi:           get(r, "doi"),
+        year:          get(r, "year", "año"),
+        rank:          get(r, "paperrank", "rank"),
+        domains:       parseListField(get(r, "domain")),
+        access:        (parseListField(get(r, "access"))[0] || "").toUpperCase(),
+        owner:         get(r, "owner"),
+        date:          get(r, "dateadded", "date"),
+        globalScore:   parseFloat(r.globalscore)   || 0,
+        internalScore: parseFloat(r.internalscore) || 0,
+        combinedScore: parseFloat(r.combinedscore) || 0,
+        tagMatches:    parseInt(r.tagmatches)       || 0,
+        matchedTags:   Array.isArray(matchedTags) ? matchedTags : [],
+        _hasScores:    !!(r.globalscore && r.globalscore.trim()),
+      };
+    })
+    .filter(p => p.title);
 }
 
-// ── Estado de la app ──
-let PAPERS = [], query = "", domain = "", sort = "rank", access = "";
+// ── Estado ──
+let PAPERS = [], query = "", domain = "", sort = "combined", access = "";
 
 function allDomains(papers) {
   const seen = new Set(), list = [];
@@ -419,7 +611,6 @@ function allDomains(papers) {
 
 function buildDomainPills(papers) {
   const bar = document.getElementById("filterBar");
-  // Limpiar pills anteriores excepto "Todos"
   [...bar.querySelectorAll(".pill:not([data-domain=''])")].forEach(el => el.remove());
   allDomains(papers).forEach(d => {
     const btn = document.createElement("button");
@@ -449,6 +640,27 @@ function matches(p, q) {
   return [p.title, p.authors, p.abstract, p.why, p.owner, ...p.domains].some(f => f && f.toLowerCase().includes(lq));
 }
 
+// ── Stats bar ──
+function updateStatsBar(list) {
+  const bar = document.getElementById("statsBar");
+  if (!PAPERS.length) { bar.innerHTML = ""; return; }
+  const gMed = PAPERS.reduce((s,p) => s + p.globalScore, 0) / PAPERS.length;
+  const iMed = PAPERS.reduce((s,p) => s + p.internalScore, 0) / PAPERS.length;
+  const gold = list.filter(p => p.globalScore >= gMed && p.internalScore >= iMed).length;
+  const f1 = n => list.length ? (list.reduce((s,p) => s+n(p), 0) / list.length).toFixed(1) : "—";
+  const hasS = PAPERS.some(p => p._hasScores);
+
+  let html = `<span class="sv">${list.length}</span> papers`;
+  if (hasS) {
+    html += `<span class="ss">·</span> ★ <span class="sv" style="color:#10b981">${gold}</span> Gold`;
+    html += `<span class="ss">·</span> Global <span class="sv" style="color:#f97316">${f1(p=>p.globalScore)}</span>`;
+    html += `<span class="ss">·</span> Internal <span class="sv" style="color:#818cf8">${f1(p=>p.internalScore)}</span>`;
+    html += `<span class="ss">·</span> Combined <span class="sv" style="color:#10b981">${f1(p=>p.combinedScore)}</span>`;
+  }
+  bar.innerHTML = html;
+}
+
+// ── Render lista ──
 function render() {
   const grid = document.getElementById("grid");
   const q = query.trim();
@@ -459,24 +671,61 @@ function render() {
     (!access || p.access === access)
   );
 
-  if (sort === "title") list.sort((a,b) => a.title.localeCompare(b.title));
-  else if (sort === "year") list.sort((a,b) => (b.year||"").localeCompare(a.year||""));
-  else list.sort((a,b) => (parseInt(b.rank)||0) - (parseInt(a.rank)||0));
+  if      (sort === "combined")  list.sort((a,b) => b.combinedScore  - a.combinedScore);
+  else if (sort === "global")    list.sort((a,b) => b.globalScore    - a.globalScore);
+  else if (sort === "internal")  list.sort((a,b) => b.internalScore  - a.internalScore);
+  else if (sort === "title")     list.sort((a,b) => a.title.localeCompare(b.title));
+  else if (sort === "year")      list.sort((a,b) => (b.year||"").localeCompare(a.year||""));
+  else                           list.sort((a,b) => (parseInt(b.rank)||0) - (parseInt(a.rank)||0));
 
   document.getElementById("topbar-count").textContent = list.length + " papers";
+  updateStatsBar(list);
 
   if (!list.length) {
     grid.innerHTML = '<div class="state-box">No hay resultados para esta búsqueda.</div>';
     return;
   }
 
-  grid.innerHTML = list.map((p, i) => {
+  grid.innerHTML = list.map(p => {
     const dtags = p.domains.map(d => `<span class="domain-tag">${esc(d)}</span>`).join(" ");
     const aClass = p.access === "OPEN" ? "open" : "paywall";
     const aLabel = p.access === "OPEN" ? "Open" : p.access === "PAYWALL" ? "Paywall" : p.access;
     const href = p.link || (p.doi ? "https://doi.org/" + p.doi : "");
+
+    const scoreBars = p._hasScores ? `
+      <div class="score-bars">
+        <div class="score-row">
+          <span class="score-label">Global</span>
+          <div class="score-track"><div class="score-fill global" style="width:${p.globalScore}%"></div></div>
+          <span class="score-value" style="color:#f97316">${p.globalScore.toFixed(1)}</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">Internal</span>
+          <div class="score-track"><div class="score-fill internal" style="width:${p.internalScore}%"></div></div>
+          <span class="score-value" style="color:#818cf8">${p.internalScore.toFixed(1)}</span>
+        </div>
+        <div class="score-row">
+          <span class="score-label">Combined</span>
+          <div class="score-track"><div class="score-fill combined" style="width:${p.combinedScore}%"></div></div>
+          <span class="score-value" style="color:#10b981">${p.combinedScore.toFixed(1)}</span>
+        </div>
+      </div>` : "";
+
+    const tagMatchesHtml = p.matchedTags.length > 0 ? `
+      <button class="btn-tags" onclick="this.nextElementSibling.classList.toggle('open')">
+        🔗 ${p.tagMatches} tag match${p.tagMatches !== 1 ? "es" : ""} ▸
+      </button>
+      <div class="tag-matches">
+        ${p.matchedTags.map(t => `
+          <div class="tag-match-item">
+            <span class="tag-match-name">${esc(String(t.tag||"").substring(0,55))}</span>
+            <span class="tag-match-meta">${esc(t.domain||"")} · ${Math.round((t.strength||0)*100)}%</span>
+            ${t.phrases && t.phrases.length ? `<span class="tag-match-phrases">${esc(t.phrases.slice(0,2).join(", "))}</span>` : ""}
+          </div>`).join("")}
+      </div>` : "";
+
     return `
-    <article class="card" id="card-${i}">
+    <article class="card" id="card-${p._id}">
       <div class="card-row1">
         ${p.rank ? `<div class="rank-badge">${esc(p.rank)}</div>` : ""}
         <div class="card-main">
@@ -487,16 +736,18 @@ function render() {
             ${aLabel    ? `<span class="access-badge ${aClass}">${esc(aLabel)}</span>` : ""}
             ${dtags}
           </div>
-          ${p.abstract ? `<div class="card-abstract" id="abs-${i}">${hl(p.abstract, q)}</div>` : ""}
-          ${p.why      ? `<div class="why-box" id="why-${i}">${hl(p.why, q)}</div>` : ""}
+          ${scoreBars}
+          ${p.abstract ? `<div class="card-abstract" id="abs-${p._id}">${hl(p.abstract, q)}</div>` : ""}
+          ${tagMatchesHtml}
+          ${p.why ? `<div class="why-box" id="why-${p._id}">${hl(p.why, q)}</div>` : ""}
         </div>
       </div>
       <div class="card-row2">
         <div class="card-actions">
           ${p.abstract && p.abstract.length > 120
-            ? `<button class="btn-toggle" onclick="toggleAbs(${i}, this)">▾ Ver resumen</button>`
+            ? `<button class="btn-toggle" onclick="toggleAbs(${p._id}, this)">▾ Ver resumen</button>`
             : "<span></span>"}
-          ${p.why ? `<button class="btn-toggle" onclick="toggleWhy(${i}, this)" style="color:#605e5c">💡 ¿Por qué?</button>` : ""}
+          ${p.why ? `<button class="btn-toggle" onclick="toggleWhy(${p._id}, this)" style="color:#605e5c">💡 ¿Por qué?</button>` : ""}
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           ${p.owner ? `<span class="owner-chip" title="${esc(p.owner)}">${esc(p.owner.split(";")[0].trim())}</span>` : ""}
@@ -513,21 +764,201 @@ function render() {
   }).join("");
 }
 
-function toggleAbs(i, btn) {
-  const el = document.getElementById("abs-" + i);
+function toggleAbs(id, btn) {
+  const el = document.getElementById("abs-" + id);
   const on = el.classList.toggle("expanded");
   btn.textContent = on ? "▴ Ocultar resumen" : "▾ Ver resumen";
 }
-function toggleWhy(i, btn) {
-  const el = document.getElementById("why-" + i);
+function toggleWhy(id, btn) {
+  const el = document.getElementById("why-" + id);
   const on = el.classList.toggle("visible");
   btn.textContent = on ? "💡 Ocultar" : "💡 ¿Por qué?";
 }
 
+// ── Vista switch ──
+function switchView(view) {
+  document.querySelectorAll(".view-btn").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+  const grid  = document.getElementById("grid");
+  const radar = document.getElementById("radarView");
+  if (view === "list") {
+    grid.style.display  = "";
+    radar.classList.remove("active");
+  } else {
+    grid.style.display = "none";
+    radar.classList.add("active");
+    requestAnimationFrame(() => { renderScatter(); renderHeatmap(); });
+  }
+}
+
+// ── Scatter plot ──
+function renderScatter() {
+  const container = document.getElementById("scatterContainer");
+  const W = Math.max(container.offsetWidth || 400, 280);
+  const H = 340;
+  const pad = { top: 24, right: 16, bottom: 42, left: 42 };
+  const pw = W - pad.left - pad.right;
+  const ph = H - pad.top - pad.bottom;
+
+  if (!PAPERS.length) {
+    container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px">Sin datos</p>';
+    return;
+  }
+
+  const gMed = PAPERS.reduce((s,p) => s + p.globalScore, 0) / PAPERS.length;
+  const iMed = PAPERS.reduce((s,p) => s + p.internalScore, 0) / PAPERS.length;
+  const maxC = Math.max(...PAPERS.map(p => p.combinedScore), 1);
+
+  const sx = v => pad.left + (v / 100) * pw;
+  const sy = v => pad.top + ph - (v / 100) * ph;
+
+  let svg = `<svg id="scatterSvg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="font-family:inherit;display:block">`;
+
+  // Grid
+  [0,25,50,75,100].forEach(v => {
+    svg += `<line x1="${sx(v).toFixed(1)}" y1="${pad.top}" x2="${sx(v).toFixed(1)}" y2="${H-pad.bottom}" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="3,3"/>`;
+    svg += `<line x1="${pad.left}" y1="${sy(v).toFixed(1)}" x2="${W-pad.right}" y2="${sy(v).toFixed(1)}" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="3,3"/>`;
+    svg += `<text x="${sx(v).toFixed(1)}" y="${H-pad.bottom+13}" text-anchor="middle" fill="#94a3b8" font-size="10">${v}</text>`;
+    svg += `<text x="${pad.left-5}" y="${(sy(v)+3).toFixed(1)}" text-anchor="end" fill="#94a3b8" font-size="10">${v}</text>`;
+  });
+
+  // Median lines
+  svg += `<line x1="${sx(gMed).toFixed(1)}" y1="${pad.top}" x2="${sx(gMed).toFixed(1)}" y2="${H-pad.bottom}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="5,3" opacity="0.5"/>`;
+  svg += `<line x1="${pad.left}" y1="${sy(iMed).toFixed(1)}" x2="${W-pad.right}" y2="${sy(iMed).toFixed(1)}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="5,3" opacity="0.5"/>`;
+
+  // Quadrant labels
+  svg += `<text x="${sx((100+gMed)/2).toFixed(1)}" y="${(sy((100+iMed)/2)+4).toFixed(1)}" text-anchor="middle" fill="#10b981" font-size="11" font-weight="600" opacity="0.7">★ GOLD</text>`;
+  svg += `<text x="${sx(gMed/2).toFixed(1)}" y="${(sy((100+iMed)/2)+4).toFixed(1)}" text-anchor="middle" fill="#818cf8" font-size="10" opacity="0.6">NICHE</text>`;
+  svg += `<text x="${sx((100+gMed)/2).toFixed(1)}" y="${(sy(iMed/2)+4).toFixed(1)}" text-anchor="middle" fill="#f97316" font-size="10" opacity="0.6">WATCH</text>`;
+  svg += `<text x="${sx(gMed/2).toFixed(1)}" y="${(sy(iMed/2)+4).toFixed(1)}" text-anchor="middle" fill="#94a3b8" font-size="10" opacity="0.5">BACKLOG</text>`;
+
+  // Axis labels
+  svg += `<text x="${(W/2).toFixed(1)}" y="${H-3}" text-anchor="middle" fill="#94a3b8" font-size="11">Global Score →</text>`;
+  svg += `<text x="11" y="${(H/2).toFixed(1)}" text-anchor="middle" fill="#94a3b8" font-size="11" transform="rotate(-90,11,${(H/2).toFixed(1)})">Internal →</text>`;
+
+  // Dots
+  PAPERS.forEach(p => {
+    const r = (4 + (p.combinedScore / maxC) * 10).toFixed(1);
+    const col = DOM_COLORS[p.domains[0]] || "#94a3b8";
+    const safeTitle = p.title.substring(0, 60).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    svg += `<circle class="scatter-dot"
+      cx="${sx(p.globalScore).toFixed(1)}" cy="${sy(p.internalScore).toFixed(1)}" r="${r}"
+      fill="${col}" fill-opacity="0.65" stroke="${col}" stroke-width="1.5"
+      data-pid="${p._id}"
+      data-title="${safeTitle}"
+      data-scores="G=${p.globalScore.toFixed(1)} · I=${p.internalScore.toFixed(1)} · C=${p.combinedScore.toFixed(1)}"/>`;
+  });
+
+  svg += "</svg>";
+  container.innerHTML = svg;
+
+  const svgEl = container.querySelector("#scatterSvg");
+  svgEl.addEventListener("mousemove", e => {
+    const dot = e.target.closest(".scatter-dot");
+    if (dot) showTooltip(e, dot.dataset.title, dot.dataset.scores);
+    else hideTooltip();
+  });
+  svgEl.addEventListener("mouseleave", hideTooltip);
+  svgEl.addEventListener("click", e => {
+    const dot = e.target.closest(".scatter-dot");
+    if (dot) scrollToCard(parseInt(dot.dataset.pid));
+  });
+}
+
+// ── Heatmap ──
+function renderHeatmap() {
+  const container = document.getElementById("heatmapContainer");
+  if (!PAPERS.length) { container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px">Sin datos</p>'; return; }
+
+  const hasMatchData = PAPERS.some(p => p.matchedTags && p.matchedTags.length > 0);
+  if (!hasMatchData) {
+    container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;font-size:12px;line-height:1.6">Sin datos de tag matching aún.<br>Disponible cuando el CSV incluya<br>la columna <code>MatchedTags</code>.</p>';
+    return;
+  }
+
+  const top15 = [...PAPERS].sort((a,b) => b.combinedScore - a.combinedScore).slice(0, 15);
+
+  // Domain columns: only those that appear in matchedTags data
+  const domainSet = new Set();
+  PAPERS.forEach(p => p.matchedTags.forEach(t => { if (t.domain) domainSet.add(t.domain); }));
+  const domCols = Object.keys(DOM_COLORS).filter(d => domainSet.has(d));
+  if (!domCols.length) {
+    container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;font-size:12px">Sin datos de dominio en tag matches.</p>';
+    return;
+  }
+
+  // Compute raw intensity matrix
+  const matrix = top15.map(p =>
+    domCols.map(d => p.matchedTags.filter(t => t.domain === d).reduce((s,t) => s + (t.strength||0), 0))
+  );
+  const colMax = domCols.map((_, ci) => Math.max(...matrix.map(r => r[ci]), 0.001));
+
+  const hexToRgb = h => `${parseInt(h.slice(1,3),16)},${parseInt(h.slice(3,5),16)},${parseInt(h.slice(5,7),16)}`;
+  const shortName = d => d.split(' & ')[0].split(' ')[0].substring(0, 8);
+
+  let html = `<div style="overflow-x:auto"><table class="heatmap-table"><thead><tr>
+    <th style="text-align:left;min-width:120px">Paper</th>
+    ${domCols.map(d => `<th title="${esc(d)}" style="color:${DOM_COLORS[d]}">${shortName(d)}</th>`).join("")}
+    <th style="color:#10b981">C</th>
+  </tr></thead><tbody>`;
+
+  top15.forEach((p, ri) => {
+    html += `<tr>
+      <td title="${esc(p.title)}" onclick="scrollToCard(${p._id})">${esc(p.title.substring(0, 32))}…</td>
+      ${domCols.map((d, ci) => {
+        const norm = matrix[ri][ci] / colMax[ci];
+        const rgb  = hexToRgb(DOM_COLORS[d] || "#94a3b8");
+        const bg   = norm > 0.05 ? `rgba(${rgb},${Math.min(norm * 0.8 + 0.1, 0.9).toFixed(2)})` : "transparent";
+        const val  = norm > 0.05 ? Math.round(norm * 100) : "";
+        const tc   = norm > 0.45 ? "white" : "#334155";
+        return `<td style="background:${bg};color:${tc}" data-domain="${esc(d)}" onclick="heatCellClick(event)">${val}</td>`;
+      }).join("")}
+      <td style="color:#10b981;font-weight:700">${p.combinedScore.toFixed(1)}</td>
+    </tr>`;
+  });
+
+  html += "</tbody></table></div>";
+  container.innerHTML = html;
+}
+
+function heatCellClick(e) {
+  const d = e.currentTarget.dataset.domain;
+  if (d) { setDomain(d); switchView("list"); }
+}
+
+// ── Scroll a tarjeta desde scatter ──
+function scrollToCard(pid) {
+  query = ""; access = ""; domain = "";
+  const si = document.getElementById("searchInput");
+  const ai = document.getElementById("accessSelect");
+  if (si) si.value = "";
+  if (ai) ai.value = "";
+  document.querySelectorAll("#filterBar .pill").forEach(p => p.classList.toggle("active", p.dataset.domain === ""));
+  switchView("list");
+  render();
+  requestAnimationFrame(() => {
+    const el = document.getElementById("card-" + pid);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.style.outline = "2px solid #0078d4";
+      setTimeout(() => { el.style.outline = ""; }, 2000);
+    }
+  });
+}
+
+// ── Tooltip ──
+const _tooltip = document.getElementById("tooltip");
+function showTooltip(e, title, scores) {
+  _tooltip.innerHTML = `<div style="font-weight:600;margin-bottom:3px">${esc(title)}…</div><div style="color:#94a3b8;font-size:11px">${esc(scores)}</div>`;
+  _tooltip.style.display = "block";
+  _tooltip.style.left = (e.clientX + 14) + "px";
+  _tooltip.style.top  = (e.clientY - 10) + "px";
+}
+function hideTooltip() { _tooltip.style.display = "none"; }
+
 // ── Controles ──
-document.getElementById("searchInput").addEventListener("input", e => { query = e.target.value; render(); });
-document.getElementById("sortSelect").addEventListener("change", e => { sort = e.target.value; render(); });
-document.getElementById("accessSelect").addEventListener("change", e => { access = e.target.value; render(); });
+document.getElementById("searchInput").addEventListener("input",  e => { query  = e.target.value; render(); });
+document.getElementById("sortSelect").addEventListener("change",  e => { sort   = e.target.value; render(); });
+document.getElementById("accessSelect").addEventListener("change",e => { access = e.target.value; render(); });
 document.querySelector(".pill[data-domain='']").onclick = () => setDomain("");
 
 // ── Auth ──
@@ -560,36 +991,33 @@ async function tryLogin() {
 document.getElementById("loginBtn").onclick = tryLogin;
 document.getElementById("pwdInput").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
 
-// Si ya estaba autenticado en esta sesión, saltar el login
 if (sessionStorage.getItem("tv_auth") === "1") {
   document.getElementById("login-screen").style.display = "none";
   document.getElementById("app").style.display = "block";
 }
 
+// ── Carga CSV ──
 function loadCSV() {
+  fetch("papers.csv")
+    .then(r => {
+      if (!r.ok) throw new Error("No se pudo cargar papers.csv (" + r.status + ")");
+      return r.text();
+    })
+    .then(text => {
+      const rows    = parseCSV(text);
+      const records = csvToObjects(rows);
+      PAPERS        = normalizePapers(records);
+      buildDomainPills(PAPERS);
+      ["searchInput","sortSelect","accessSelect"].forEach(id => document.getElementById(id).disabled = false);
+      render();
+    })
+    .catch(err => {
+      document.getElementById("grid").innerHTML =
+        `<div class="state-box">⚠️ Error al cargar los datos.<br><small>${esc(err.message)}</small></div>`;
+      document.getElementById("topbar-count").textContent = "Error";
+    });
+}
 
-// ── Carga del CSV ──
-fetch("papers.csv")
-  .then(r => {
-    if (!r.ok) throw new Error("No se pudo cargar papers.csv (" + r.status + ")");
-    return r.text();
-  })
-  .then(text => {
-    const rows    = parseCSV(text);
-    const records = csvToObjects(rows);
-    PAPERS        = normalizePapers(records);
-    buildDomainPills(PAPERS);
-    ["searchInput","sortSelect","accessSelect"].forEach(id => document.getElementById(id).disabled = false);
-    render();
-  })
-  .catch(err => {
-    document.getElementById("grid").innerHTML =
-      `<div class="state-box">⚠️ Error al cargar los datos.<br><small>${esc(err.message)}</small></div>`;
-    document.getElementById("topbar-count").textContent = "Error";
-  });
-} // fin loadCSV
-
-// Arrancar solo si ya hay sesión activa
 if (sessionStorage.getItem("tv_auth") === "1") loadCSV();
 </script>
 </div> <!-- #app -->
