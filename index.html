@@ -341,6 +341,10 @@
     margin-bottom: 16px;
     font-weight: 600;
   }
+  #scatterContainer  { min-height: 360px; display: flex; align-items: center; justify-content: center; }
+  #heatmapContainer  { min-height: 300px; display: flex; align-items: center; justify-content: center; }
+  #scatterContainer svg, #heatmapContainer > div { width: 100%; }
+  .radar-placeholder { color: #94a3b8; font-size: 13px; text-align: center; line-height: 1.7; padding: 20px; }
   .scatter-dot { cursor: pointer; }
   .scatter-dot:hover { filter: brightness(.8); }
   .heatmap-table { width: 100%; border-collapse: collapse; font-size: 11px; }
@@ -793,16 +797,28 @@ function switchView(view) {
 // ── Scatter plot ──
 function renderScatter() {
   const container = document.getElementById("scatterContainer");
+  console.log("renderScatter · PAPERS:", PAPERS.length, "· globalScore[0]:", PAPERS[0]?.globalScore);
+
+  if (!PAPERS.length) {
+    container.innerHTML = '<p class="radar-placeholder">Sin papers cargados.</p>';
+    return;
+  }
+
+  const hasScores = PAPERS.some(p => p._hasScores);
+  if (!hasScores) {
+    container.innerHTML = `<p class="radar-placeholder">
+      📊 El scatter estará disponible cuando el CSV incluya<br>
+      las columnas <strong>GlobalScore</strong>, <strong>InternalScore</strong> y <strong>CombinedScore</strong>.<br><br>
+      <span style="font-size:11px">Actualmente hay ${PAPERS.length} papers cargados sin datos de scoring.</span>
+    </p>`;
+    return;
+  }
+
   const W = Math.max(container.offsetWidth || 400, 280);
   const H = 340;
   const pad = { top: 24, right: 16, bottom: 42, left: 42 };
   const pw = W - pad.left - pad.right;
   const ph = H - pad.top - pad.bottom;
-
-  if (!PAPERS.length) {
-    container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px">Sin datos</p>';
-    return;
-  }
 
   const gMed = PAPERS.reduce((s,p) => s + p.globalScore, 0) / PAPERS.length;
   const iMed = PAPERS.reduce((s,p) => s + p.internalScore, 0) / PAPERS.length;
@@ -850,6 +866,7 @@ function renderScatter() {
 
   svg += "</svg>";
   container.innerHTML = svg;
+  console.log("SVG injected · container size:", container.offsetWidth, "×", container.offsetHeight);
 
   const svgEl = container.querySelector("#scatterSvg");
   svgEl.addEventListener("mousemove", e => {
@@ -867,11 +884,15 @@ function renderScatter() {
 // ── Heatmap ──
 function renderHeatmap() {
   const container = document.getElementById("heatmapContainer");
-  if (!PAPERS.length) { container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px">Sin datos</p>'; return; }
+  if (!PAPERS.length) { container.innerHTML = '<p class="radar-placeholder">Sin papers cargados.</p>'; return; }
 
   const hasMatchData = PAPERS.some(p => p.matchedTags && p.matchedTags.length > 0);
   if (!hasMatchData) {
-    container.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:30px;font-size:12px;line-height:1.6">Sin datos de tag matching aún.<br>Disponible cuando el CSV incluya<br>la columna <code>MatchedTags</code>.</p>';
+    container.innerHTML = `<p class="radar-placeholder">
+      🔥 El heatmap estará disponible cuando el CSV incluya<br>
+      la columna <strong>MatchedTags</strong>.<br><br>
+      <span style="font-size:11px">${PAPERS.length} papers cargados sin datos de matching.</span>
+    </p>`;
     return;
   }
 
