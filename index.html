@@ -223,10 +223,77 @@
     .card { padding: 12px; }
     .rank-badge { min-width: 30px; height: 30px; font-size: 11px; }
   }
+
+  /* LOGIN */
+  #login-screen {
+    position: fixed; inset: 0; z-index: 999;
+    background: var(--ms-bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .login-card {
+    background: var(--ms-white);
+    border: 1px solid var(--ms-gray3);
+    border-radius: 6px;
+    box-shadow: var(--shadow-hov);
+    padding: 40px 36px;
+    width: 100%; max-width: 360px;
+    text-align: center;
+  }
+  .login-logo {
+    width: 48px; height: 48px;
+    background: var(--ms-blue);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .login-card h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .login-card p  { font-size: 13px; color: var(--ms-muted); margin-bottom: 24px; }
+  .login-field {
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--ms-gray3);
+    border-radius: var(--radius);
+    font: inherit; font-size: 14px;
+    color: var(--ms-text);
+    outline: none;
+    margin-bottom: 12px;
+    transition: border-color .15s;
+  }
+  .login-field:focus { border-color: var(--ms-blue); box-shadow: 0 0 0 1px var(--ms-blue); }
+  .login-field.error { border-color: #d13438; box-shadow: 0 0 0 1px #d13438; }
+  .login-btn {
+    width: 100%; height: 36px;
+    background: var(--ms-blue); color: white;
+    border: none; border-radius: var(--radius);
+    font: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background .15s;
+  }
+  .login-btn:hover { background: var(--ms-blue-dk); }
+  .login-error {
+    font-size: 12px; color: #d13438;
+    margin-top: 10px; display: none;
+  }
 </style>
 </head>
 <body>
 
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="24" height="24" viewBox="0 0 20 20" fill="white">
+        <path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h10v2H2z"/>
+      </svg>
+    </div>
+    <h2>TechVigilance</h2>
+    <p>Introduce la contraseña para acceder</p>
+    <input class="login-field" type="password" id="pwdInput" placeholder="Contraseña" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn">Entrar</button>
+    <div class="login-error" id="loginError">Contraseña incorrecta.</div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
 <div class="topbar">
   <svg width="20" height="20" viewBox="0 0 20 20" fill="white">
     <path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h10v2H2z"/>
@@ -463,6 +530,44 @@ document.getElementById("sortSelect").addEventListener("change", e => { sort = e
 document.getElementById("accessSelect").addEventListener("change", e => { access = e.target.value; render(); });
 document.querySelector(".pill[data-domain='']").onclick = () => setDomain("");
 
+// ── Auth ──
+const HASH = "d1325278ceeeb1fe96b7c3b64e6c495c16074b8864c7b82af202573bfb4ff98f";
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+async function tryLogin() {
+  const val = document.getElementById("pwdInput").value;
+  const hash = await sha256(val);
+  if (hash === HASH) {
+    sessionStorage.setItem("tv_auth", "1");
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    loadCSV();
+  } else {
+    const field = document.getElementById("pwdInput");
+    const err   = document.getElementById("loginError");
+    field.classList.add("error");
+    err.style.display = "block";
+    field.value = "";
+    field.focus();
+    setTimeout(() => { field.classList.remove("error"); err.style.display = "none"; }, 2500);
+  }
+}
+
+document.getElementById("loginBtn").onclick = tryLogin;
+document.getElementById("pwdInput").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+
+// Si ya estaba autenticado en esta sesión, saltar el login
+if (sessionStorage.getItem("tv_auth") === "1") {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
+
+function loadCSV() {
+
 // ── Carga del CSV ──
 fetch("papers.csv")
   .then(r => {
@@ -482,6 +587,11 @@ fetch("papers.csv")
       `<div class="state-box">⚠️ Error al cargar los datos.<br><small>${esc(err.message)}</small></div>`;
     document.getElementById("topbar-count").textContent = "Error";
   });
+} // fin loadCSV
+
+// Arrancar solo si ya hay sesión activa
+if (sessionStorage.getItem("tv_auth") === "1") loadCSV();
 </script>
+</div> <!-- #app -->
 </body>
 </html>
