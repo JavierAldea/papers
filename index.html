@@ -815,9 +815,20 @@ function normalizePapers(rows) {
   let id = 0;
   return rows.map(r => {
     const domainRaw = r.domain || '';
-    const domains = domainRaw
-      ? domainRaw.split(/[;,]/).map(d => d.trim()).filter(Boolean)
-      : [];
+    let domains = [];
+    if (domainRaw.trim()) {
+      try {
+        let clean = domainRaw.trim();
+        if (clean.startsWith('"') && clean.endsWith('"')) {
+          clean = clean.slice(1, -1).replace(/""/g, '"');
+        }
+        const parsed = JSON.parse(clean);
+        if (Array.isArray(parsed)) domains = parsed.map(s => String(s).trim()).filter(Boolean);
+        else if (typeof parsed === 'string') domains = [parsed.trim()].filter(Boolean);
+      } catch {
+        domains = domainRaw.replace(/[\[\]"]/g, '').split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
 
     let accessStr = r.access || '';
     if (accessStr.startsWith('[')) {
@@ -1358,7 +1369,7 @@ function renderScatter() {
   if (!wrap) return;
 
   const W = 520, H = 400;
-  const PAD = { t: 30, r: 30, b: 50, l: 52 };
+  const PAD = { t: 42, r: 30, b: 50, l: 52 };
   const iW = W - PAD.l - PAD.r;
   const iH = H - PAD.t - PAD.b;
 
@@ -1374,10 +1385,9 @@ function renderScatter() {
   const midX = (xMin + xMax) / 2;
   const midY = (yMin + yMax) / 2;
 
-  // Quadrant label helper
-  function qLabel(label, cx, cy, g0, g1, i0, i1) {
-    return `<text x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" text-anchor="middle" font-size="10" fill="#94a3b8" style="cursor:pointer;user-select:none" onclick="zoomQuadrant('${label}',${g0},${g1},${i0},${i1})">${label}</text>`;
-  }
+  // Quadrant labels go in the MARGINS, outside the plot area
+  const topLabelY    = PAD.t - 14;
+  const bottomLabelY = PAD.t + iH + 28;
 
   const papers = getFiltered();
 
@@ -1423,10 +1433,10 @@ function renderScatter() {
   `;
 
   const qLabels = [
-    qLabel('GOLD',  scX((midX+xMax)/2), scY((midY+yMax)/2), midX, xMax, midY, yMax),
-    qLabel('NICHE', scX((xMin+midX)/2), scY((midY+yMax)/2), xMin, midX, midY, yMax),
-    qLabel('BROAD', scX((midX+xMax)/2), scY((yMin+midY)/2), midX, xMax, yMin, midY),
-    qLabel('LOW',   scX((xMin+midX)/2), scY((yMin+midY)/2), xMin, midX, yMin, midY),
+    `<text x="${(W-PAD.r).toFixed(1)}" y="${topLabelY.toFixed(1)}" text-anchor="end"   font-size="10" font-weight="600" fill="#10b981" opacity="0.85" style="cursor:pointer;user-select:none" onclick="zoomQuadrant('GOLD',${midX},${xMax},${midY},${yMax})">GOLD</text>`,
+    `<text x="${PAD.l.toFixed(1)}"     y="${topLabelY.toFixed(1)}" text-anchor="start"  font-size="10" font-weight="600" fill="#818cf8" opacity="0.85" style="cursor:pointer;user-select:none" onclick="zoomQuadrant('NICHE',${xMin},${midX},${midY},${yMax})">NICHE</text>`,
+    `<text x="${(W-PAD.r).toFixed(1)}" y="${bottomLabelY.toFixed(1)}" text-anchor="end"   font-size="10" font-weight="600" fill="#f97316" opacity="0.85" style="cursor:pointer;user-select:none" onclick="zoomQuadrant('BROAD',${midX},${xMax},${yMin},${midY})">BROAD</text>`,
+    `<text x="${PAD.l.toFixed(1)}"     y="${bottomLabelY.toFixed(1)}" text-anchor="start"  font-size="10" font-weight="600" fill="#94a3b8" opacity="0.85" style="cursor:pointer;user-select:none" onclick="zoomQuadrant('LOW',${xMin},${midX},${yMin},${midY})">LOW</text>`,
   ].join('');
 
   const axisLabels = `
@@ -1445,6 +1455,25 @@ function renderScatter() {
 // ─── Heatmap ───────────────────────────────────────────────────────────────
 const HEAT_PER_PAGE = 15;
 
+const HM_DOMAINS = [
+  'Brewing & Process',
+  'Byproducts & Circularity',
+  'Materials & Packaging',
+  'Water & Environment',
+  'Biotech applied',
+  'Analytics & Digital',
+  'Neuroscience & Functional',
+];
+const HM_SHORT = {
+  'Brewing & Process':         'Brew',
+  'Byproducts & Circularity':  'Byprod',
+  'Materials & Packaging':     'Mater',
+  'Water & Environment':       'Water',
+  'Biotech applied':           'Biotech',
+  'Analytics & Digital':       'Analyt',
+  'Neuroscience & Functional': 'Neuro',
+};
+
 function renderHeatmap() {
   const wrap = document.getElementById('heatmapWrap');
   if (!wrap) return;
@@ -1453,31 +1482,63 @@ function renderHeatmap() {
   heatPage = Math.max(0, Math.min(heatPage, totalPages - 1));
   const page = sorted.slice(heatPage * HEAT_PER_PAGE, (heatPage + 1) * HEAT_PER_PAGE);
 
-  const rows = page.map(p => {
-    const gBar = `<span class="hm-bar" style="width:${Math.round(p.globalScore * 0.6)}px;background:var(--bar-g)"></span>`;
-    const iBar = `<span class="hm-bar" style="width:${Math.round(p.internalScore * 0.6)}px;background:var(--bar-i)"></span>`;
-    const cBar = `<span class="hm-bar" style="width:${Math.round(p.combinedScore * 0.6)}px;background:var(--bar-c)"></span>`;
-    const domainCell = p.domains.length
-      ? `<span class="hm-cell-domain" onclick="addDomainFilter(${JSON.stringify(p.domains[0])})" title="Filtrar por ${esc(p.domains[0])}">${esc(p.domains[0].substring(0, 18))}</span>`
-      : '—';
-    return `<tr class="hm-row" data-pid="${p._id}" onmouseenter="highlightSync(${p._id})" onmouseleave="highlightSync(null)">
-  <td><span class="hm-title" onclick="scrollToCard(${p._id})" title="${esc(p.title)}">${esc(p.title.substring(0, 35))}${p.title.length > 35 ? '…' : ''}</span></td>
-  <td>${domainCell}</td>
-  <td class="hm-score hm-score-g">${gBar} ${p.globalScore.toFixed(1)}</td>
-  <td class="hm-score hm-score-i">${iBar} ${p.internalScore.toFixed(1)}</td>
-  <td class="hm-score hm-score-c">${cBar} ${p.combinedScore.toFixed(1)}</td>
-</tr>`;
+  // Compute raw strength matrix: paper × domain
+  const matrix = page.map(p =>
+    HM_DOMAINS.map(dom => {
+      const tags = (p.matchedTags || []).filter(t => t.domain === dom);
+      return tags.reduce((sum, t) => sum + (parseFloat(t.strength) || 0), 0);
+    })
+  );
+
+  // Normalize per column (0–100 scale relative to column max)
+  const colMax = HM_DOMAINS.map((_, ci) =>
+    Math.max(...matrix.map(row => row[ci]), 0.001)
+  );
+
+  // Header row
+  let thead = '<tr><th style="text-align:left;padding:5px 8px;min-width:160px;color:var(--sl-500);font-weight:500;font-size:11px">Paper</th>';
+  HM_DOMAINS.forEach(d => {
+    thead += `<th style="text-align:center;padding:5px 4px;width:54px;color:var(--sl-500);font-weight:500;font-size:10px;white-space:nowrap" title="${esc(d)}">${esc(HM_SHORT[d])}</th>`;
+  });
+  thead += '<th style="text-align:right;padding:5px 8px;width:42px;color:var(--sl-500);font-weight:500;font-size:11px">C</th></tr>';
+
+  // Data rows
+  const rows = page.map((p, ri) => {
+    const shortTitle = p.title.length > 28 ? p.title.substring(0, 28) + '…' : p.title;
+    let tr = `<tr class="hm-row" data-pid="${p._id}" style="border-bottom:1px solid var(--sl-100)" onmouseenter="highlightSync(${p._id})" onmouseleave="highlightSync(null)">`;
+    tr += `<td style="padding:5px 8px;color:var(--sl-700);font-size:11px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px" onclick="scrollToCard(${p._id})" title="${esc(p.title)}">${esc(shortTitle)}</td>`;
+
+    HM_DOMAINS.forEach((dom, ci) => {
+      const raw  = matrix[ri][ci];
+      const norm = raw / colMax[ci];           // 0–1 relative to column max
+      const pct  = Math.round(norm * 100);     // 0–100 display value
+      const show = norm > 0.05;
+
+      // Indigo base color (#818cf8) with variable opacity
+      const alpha   = show ? Math.min(0.12 + norm * 0.75, 0.87) : 0;
+      const bg      = show ? `rgba(129,140,248,${alpha.toFixed(2)})` : 'transparent';
+      const textCol = norm > 0.5 ? '#1e293b' : '#64748b';
+      const fw      = norm > 0.5 ? '600' : '400';
+
+      tr += `<td style="text-align:center;padding:5px 4px;background:${bg};color:${textCol};font-family:ui-monospace,monospace;font-size:10px;font-weight:${fw};border-radius:3px;cursor:${show ? 'pointer' : 'default'}"
+        onclick="${show ? `addDomainFilter(${JSON.stringify(dom)})` : ''}"
+        title="${esc(dom)}: ${pct}%">${show ? pct : ''}</td>`;
+    });
+
+    tr += `<td style="text-align:right;padding:5px 8px;color:var(--sl-700);font-family:ui-monospace,monospace;font-size:11px;font-weight:600">${p.combinedScore.toFixed(1)}</td>`;
+    tr += '</tr>';
+    return tr;
   }).join('');
 
   const d0 = heatPage === 0;
   const dN = heatPage >= totalPages - 1;
   wrap.innerHTML = `
-<table class="hm-table">
-  <thead><tr>
-    <th>Título</th><th>Dominio</th><th>Global</th><th>Internal</th><th>Combined</th>
-  </tr></thead>
+<div style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:11px">
+  <thead style="border-bottom:1px solid var(--sl-200)">${thead}</thead>
   <tbody>${rows}</tbody>
 </table>
+</div>
 <div class="hm-pagination">
   <button class="hm-page-btn" onclick="heatFirst()" ${d0 ? 'disabled' : ''}>&#171;</button>
   <button class="hm-page-btn" onclick="heatPrev()" ${d0 ? 'disabled' : ''}>&#8249;</button>
