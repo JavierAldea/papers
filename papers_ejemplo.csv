@@ -1,4 +1,0 @@
-title,authors,abstract,link
-Attention Is All You Need,"Vaswani, A.; Shazeer, N.; Parmar, N.","Proponemos un nuevo modelo de red neuronal basado únicamente en mecanismos de atención, prescindiendo completamente de recurrencia y convoluciones. Los experimentos muestran resultados superiores en tareas de traducción.",https://arxiv.org/abs/1706.03762
-BERT: Pre-training of Deep Bidirectional Transformers,"Devlin, J.; Chang, M.; Lee, K.; Toutanova, K.","Introducimos BERT, diseñado para pre-entrenar representaciones profundas bidireccionales condicionando conjuntamente el contexto izquierdo y derecho en todas las capas.",https://arxiv.org/abs/1810.04805
-Language Models are Few-Shot Learners,"Brown, T.; Mann, B.; Ryder, N.","Demostramos que los modelos de lenguaje de gran escala son aprendices de pocos ejemplos, logrando resultados competitivos en tareas de NLP sin fine-tuning.",https://arxiv.org/abs/2005.14165

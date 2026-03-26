@@ -1,0 +1,86 @@
+01. [Brewing & Process] Alcohol-free effects / alcohol alternatives (buzz without ethanol)
+    query seed: alcohol alternative; alcohol-free buzz; alcohol substitute; GABA beer; kava beverage; adaptogenic drink; functional beverage relaxation ; beverage; alcohol-free
+    exclude: spirits; intoxication promotion
+
+02. [Water & Environment] Phosphorus removal – electrocoagulation (Al/Fe)
+    query seed: electrocoagulation phosphate; aluminum electrode; iron electrode ; phosphate; wastewater
+
+03. [Water & Environment] Phosphorus removal – struvite precipitation
+    query seed: struvite precipitation; MgNH4PO4; nutrient recovery ; phosphorus; wastewater
+    exclude: soil phosphorus
+
+04. [Brewing & Process] Non-alcoholic beer process innovation
+    query seed: dealcoholization; vacuum distillation; reverse osmosis; pervaporation; spinning cone; arrested fermentation; membrane distillation ; beer; non-alcoholic
+    exclude: wine
+
+05. [Brewing & Process] NOLO sensory improvement (body, foam, aroma)
+    query seed: mouthfeel; foam stability; aroma retention; staling; off-flavor; aldehydes; worty flavor ; non-alcoholic; beer
+
+06. [Byproducts & Circularity] BSG valorization – dietary fiber & arabinoxylans
+    query seed: brewers spent grain; arabinoxylan; dietary fiber; soluble fiber ; BSG; extraction
+
+07. [Water & Environment] Phosphorus removal – adsorption (La, Zr, Fe oxides, resins)
+    query seed: phosphate adsorption; lanthanum; zirconium; iron oxide; ion exchange resin ; phosphate; adsorption
+
+08. [Water & Environment] Brewery wastewater treatment (high COD, nutrients)
+    query seed: brewery wastewater; high COD; nutrient removal; anaerobic digestion brewery ; brewery; wastewater
+
+09. [Byproducts & Circularity] BSG valorization – protein hydrolysates & bioactive peptides
+    query seed: spent grain protein; enzymatic hydrolysis; bioactive peptides ; BSG; protein
+
+10. [Biotech applied] Enzymes for gluten reduction in beer
+    query seed: prolyl endopeptidase; glutenase; gluten reduction brewing ; beer; gluten
+    exclude: bread
+
+11. [Materials & Packaging] PEF – barrier properties (O2/CO2/H2O)
+    query seed: polyethylene furanoate barrier; oxygen permeability; CO2 permeability ; PEF; packaging
+    exclude: textile
+
+12. [Brewing & Process] Off-flavors in beer (metallic, phenolic, sulfur)
+    query seed: metallic off-flavor; phenolic off-flavor; sulfur off-flavor; dimethyl sulfide; DMS; diacetyl; 4-vinyl guaiacol ; beer; off-flavor
+
+13. [Byproducts & Circularity] BSY valorization – yeast extract (umami)
+    query seed: brewer's spent yeast; yeast extract; autolysis; savory ; spent yeast; yeast extract
+
+14. [Materials & Packaging] PEF – recyclability & end-of-life (mechanical/chemical)
+    query seed: PEF recycling; chemical recycling; depolymerization ; PEF; recycling
+
+15. [Neuroscience & Functional] GABA production via fermentation (food-grade)
+    query seed: GABA fermentation; Lactobacillus GABA; yeast GABA ; GABA; fermentation
+    exclude: gabapentin
+
+16. [Brewing & Process] CIP alternatives (chemical-free, enzyme, ozone, electrolyzed water)
+    query seed: enzymatic CIP; ozone CIP; electrolyzed water; plasma cleaning; UV-C sanitation; chemical-free cleaning ; CIP; brewery
+    exclude: household
+
+17. [Biotech applied] Microbial production of functional compounds (GABA, tryptophan metabolites)
+    query seed: microbial GABA production; psychobiotics; tryptophan metabolites ; microbial; production
+    exclude: clinical drug
+
+18. [Analytics & Digital] Computer vision for defect detection in bottling (edge inference)
+    query seed: edge inference; computer vision; defect detection; fill level; label inspection ; bottling; vision
+    exclude: autonomous driving
+
+19. [Brewing & Process] Biofilm control in breweries
+    query seed: brewery biofilms; sanitation microbiology; spoilage bacteria; Pediococcus; Lactobacillus; wild yeast ; brewery; biofilm
+
+20. [Neuroscience & Functional] Gut–brain axis discoveries relevant to functional beverages
+    query seed: gut-brain axis; microbiota brain; psychobiotics; vagus nerve ; gut-brain; microbiota
+    exclude: gut-lung
+
+21. [Byproducts & Circularity] BSG extraction – green solvents (NADES, subcritical water, scCO2)
+    query seed: NADES; deep eutectic solvents; subcritical water extraction; supercritical CO2 ; spent grain; extraction
+    exclude: toxic solvent
+
+22. [Water & Environment] Package plants / decentralized treatment for factories
+    query seed: decentralized wastewater treatment; package plant; modular WWTP ; factory; wastewater
+
+23. [Brewing & Process] Gushing prediction and mitigation
+    query seed: beer gushing; overfoaming; foaming instability; Fusarium; hydrophobins ; beer; gushing
+
+24. [Water & Environment] Anaerobic digestion intensification (two-stage, THP, temperature-phased)
+    query seed: two-stage anaerobic digestion; thermal hydrolysis; temperature-phased ; anaerobic digestion; industrial
+
+25. [Byproducts & Circularity] CO2 recovery and reuse in breweries
+    query seed: CO2 recovery; CO2 capture brewery; fermentation CO2 reuse ; brewery; CO2
+
