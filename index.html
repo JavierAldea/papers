@@ -277,20 +277,6 @@
     /* Abstract */
     .card-abstract { font-size: 13px; color: var(--sl-600); line-height: 1.6; margin-bottom: 10px; }
 
-    /* Tag matches */
-    .tag-matches-section { margin-bottom: 8px; }
-    .btn-tag-toggle {
-      font-size: 11px; color: var(--sl-500); background: none; padding: 2px 0;
-      text-decoration: underline; text-decoration-color: transparent; transition: color 0.15s;
-    }
-    .btn-tag-toggle:hover { color: var(--accent); }
-    .tag-matches-list { display: none; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-    .tag-matches-list.open { display: flex; }
-    .tag-item {
-      background: var(--sl-100); color: var(--sl-600); border-radius: 3px;
-      font-size: 11px; padding: 2px 8px; cursor: pointer; transition: background 0.15s;
-    }
-    .tag-item:hover { background: var(--sl-200); color: var(--sl-800); }
 
     /* Why box */
     .why-box {
@@ -321,7 +307,6 @@
     .owner-chip {
       font-size: 11px; color: var(--sl-500); background: var(--sl-100);
       border-radius: 4px; padding: 2px 7px; white-space: nowrap;
-      max-width: 160px; overflow: hidden; text-overflow: ellipsis;
     }
     .btn-open {
       display: inline-flex; align-items: center; height: 28px; padding: 0 12px;
@@ -1142,18 +1127,6 @@ function buildCard(p, idx, q) {
   </div>
 </div>`;
 
-  // Tag matches
-  let tagMatchSection = '';
-  if (p.matchedTags && p.matchedTags.length > 0) {
-    const tagItems = p.matchedTags.map(t =>
-      `<span class="tag-item" onclick="addDomainFilter(${JSON.stringify(esc(t))})">${esc(t)}</span>`
-    ).join('');
-    tagMatchSection = `
-<div class="tag-matches-section">
-  <button class="btn-tag-toggle" onclick="toggleTagList(${p._id})">${p.matchedTags.length} tag match${p.matchedTags.length !== 1 ? 'es' : ''} &#9658;</button>
-  <div class="tag-matches-list" id="taglist-${p._id}">${tagItems}</div>
-</div>`;
-  }
 
   // Open buttons
   const pdfFile = PDF_INDEX[String(p.rank)];
@@ -1170,11 +1143,8 @@ function buildCard(p, idx, q) {
   // Owner chip
   let ownerDisplay = '';
   if (p.ownersList.length > 0) {
-    const first = p.ownersList[0];
-    const parts = first.trim().split(/\s+/);
-    const short = parts.length > 1 ? parts[0] + ' ' + parts[parts.length - 1] : first;
-    const extra = p.ownersList.length > 1 ? ` +${p.ownersList.length - 1}` : '';
-    ownerDisplay = `<span class="owner-chip" title="${esc(p.owner)}">${esc(short)}${esc(extra)}</span>`;
+    const allNames = p.ownersList.map(o => o.trim()).join(', ');
+    ownerDisplay = `<span class="owner-chip">${esc(allNames)}</span>`;
   }
 
   // Title
@@ -1204,7 +1174,6 @@ function buildCard(p, idx, q) {
   </div>
   ${scoreBars}
   ${p.abstract ? `<div class="card-abstract">${hl(p.abstract, q)}</div>` : ''}
-  ${tagMatchSection}
   <div class="why-box" id="why-${p._id}">${esc(p.why)}</div>
   <div class="card-footer">
     <div class="footer-left">
