@@ -1,0 +1,26 @@
+{
+  "name": "TechVigilance",
+  "short_name": "TechVig",
+  "description": "Biblioteca de vigilancia tecnológica para I+D",
+  "start_url": "/papers/",
+  "scope": "/papers/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1e293b",
+  "lang": "es",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' ry='32' fill='%231e293b'/%3E%3Crect x='40' y='52' width='112' height='12' rx='4' fill='%23ffffff'/%3E%3Crect x='40' y='80' width='112' height='12' rx='4' fill='%23ffffff'/%3E%3Crect x='40' y='108' width='80' height='12' rx='4' fill='%23ffffff'/%3E%3Crect x='40' y='136' width='96' height='12' rx='4' fill='%23ffffff'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' ry='80' fill='%231e293b'/%3E%3Crect x='100' y='140' width='312' height='32' rx='8' fill='%23ffffff'/%3E%3Crect x='100' y='212' width='312' height='32' rx='8' fill='%23ffffff'/%3E%3Crect x='100' y='284' width='220' height='32' rx='8' fill='%23ffffff'/%3E%3Crect x='100' y='356' width='264' height='32' rx='8' fill='%23ffffff'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
