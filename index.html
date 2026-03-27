@@ -1720,7 +1720,7 @@ function loadCSV() {
     });
 
   // Fetch main CSV
-  fetch('papers.csv')
+  fetch('papers.csv?v=' + Date.now())
     .then(r => {
       if (!r.ok) throw new Error('No se pudo cargar papers.csv (' + r.status + ')');
       return r.text();
